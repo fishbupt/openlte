@@ -35,8 +35,8 @@
 *******************************************************************************/
 
 #include "liblte_security.h"
-#include "polarssl/compat-1.2.h"
-#include "polarssl/aes.h"
+#include "mbedtls/aes.h"
+#include "mbedtls/md.h"
 #include "math.h"
 
 /*******************************************************************************
@@ -257,7 +257,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_asme(uint8  *ck,
         }
 
         // Derive Kasme
-        sha2_hmac(key, 32, s, 14, k_asme, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), key, 32, s, 14, k_asme);
 
         err = LIBLTE_SUCCESS;
     }
@@ -292,7 +292,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_enb(uint8  *k_asme,
         s[6] = 0x04; // Second byte of L0
 
         // Derive Kenb
-        sha2_hmac(k_asme, 32, s, 7, k_enb, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_asme, 32, s, 7, k_enb);
 
         err = LIBLTE_SUCCESS;
     }
@@ -330,7 +330,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_nas(uint8                          
         s[6] = 0x01; // Second byte of L1
 
         // Derive KNASenc
-        sha2_hmac(k_asme, 32, s, 7, k_nas_enc, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_asme, 32, s, 7, k_nas_enc);
 
         // Construct S for KNASint
         s[0] = 0x15; // FC
@@ -342,7 +342,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_nas(uint8                          
         s[6] = 0x01; // Second byte of L1
 
         // Derive KNASint
-        sha2_hmac(k_asme, 32, s, 7, k_nas_int, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_asme, 32, s, 7, k_nas_int);
 
         err = LIBLTE_SUCCESS;
     }
@@ -380,7 +380,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_rrc(uint8                          
         s[6] = 0x01; // Second byte of L1
 
         // Derive KRRCenc
-        sha2_hmac(k_enb, 32, s, 7, k_rrc_enc, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_enb, 32, s, 7, k_rrc_enc);
 
         // Construct S for KRRCint
         s[0] = 0x15; // FC
@@ -392,7 +392,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_rrc(uint8                          
         s[6] = 0x01; // Second byte of L1
 
         // Derive KRRCint
-        sha2_hmac(k_enb, 32, s, 7, k_rrc_int, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_enb, 32, s, 7, k_rrc_int);
 
         err = LIBLTE_SUCCESS;
     }
@@ -431,7 +431,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_up(uint8                           
         s[6] = 0x01; // Second byte of L1
 
         // Derive KUPenc
-        sha2_hmac(k_enb, 32, s, 7, k_up_enc, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_enb, 32, s, 7, k_up_enc);
 
         // Construct S for KUPint
         s[0] = 0x15; // FC
@@ -443,7 +443,7 @@ LIBLTE_ERROR_ENUM liblte_security_generate_k_up(uint8                           
         s[6] = 0x01; // Second byte of L1
 
         // Derive KUPint
-        sha2_hmac(k_enb, 32, s, 7, k_up_int, 0);
+        mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), k_enb, 32, s, 7, k_up_int);
 
         err = LIBLTE_SUCCESS;
     }
@@ -470,7 +470,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8  *key,
 {
     LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
     uint8             M[msg_len+8+16];
-    aes_context       ctx;
+    mbedtls_aes_context ctx;
     uint32            i;
     uint32            j;
     uint32            n;
@@ -487,8 +487,8 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8  *key,
        mac != NULL)
     {
         // Subkey L generation
-        aes_setkey_enc(&ctx, key, 128);
-        aes_crypt_ecb(&ctx, AES_ENCRYPT, const_zero, L);
+        mbedtls_aes_setkey_enc(&ctx, key, 128);
+        mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, const_zero, L);
 
         // Subkey K1 generation
         for(i=0; i<15; i++)
@@ -536,7 +536,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8  *key,
             {
                 tmp[j] = T[j] ^ M[i*16 + j];
             }
-            aes_crypt_ecb(&ctx, AES_ENCRYPT, tmp, T);
+            mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, tmp, T);
         }
         pad_bits = ((msg_len*8) + 64) % 128;
         if(pad_bits == 0)
@@ -545,7 +545,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8  *key,
             {
                 tmp[j] = T[j] ^ K1[j] ^ M[i*16 + j];
             }
-            aes_crypt_ecb(&ctx, AES_ENCRYPT, tmp, T);
+            mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, tmp, T);
         }else{
             pad_bits                       = (128 - pad_bits) - 1;
             M[i*16 + (15 - (pad_bits/8))] |= 0x1 << (pad_bits % 8);
@@ -553,7 +553,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8  *key,
             {
                 tmp[j] = T[j] ^ K2[j] ^ M[i*16 + j];
             }
-            aes_crypt_ecb(&ctx, AES_ENCRYPT, tmp, T);
+            mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, tmp, T);
         }
 
         for(i=0; i<4; i++)
@@ -575,7 +575,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8                 *key,
 {
     LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
     uint8             M[msg->N_bits*8+8+16];
-    aes_context       ctx;
+    mbedtls_aes_context       ctx;
     uint32            i;
     uint32            j;
     uint32            n;
@@ -592,8 +592,8 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8                 *key,
        mac != NULL)
     {
         // Subkey L generation
-        aes_setkey_enc(&ctx, key, 128);
-        aes_crypt_ecb(&ctx, AES_ENCRYPT, const_zero, L);
+        mbedtls_aes_setkey_enc(&ctx, key, 128);
+        mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, const_zero, L);
 
         // Subkey K1 generation
         for(i=0; i<15; i++)
@@ -653,7 +653,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8                 *key,
             {
                 tmp[j] = T[j] ^ M[i*16 + j];
             }
-            aes_crypt_ecb(&ctx, AES_ENCRYPT, tmp, T);
+            mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, tmp, T);
         }
         pad_bits = (msg->N_bits + 64) % 128;
         if(pad_bits == 0)
@@ -662,7 +662,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8                 *key,
             {
                 tmp[j] = T[j] ^ K1[j] ^ M[i*16 + j];
             }
-            aes_crypt_ecb(&ctx, AES_ENCRYPT, tmp, T);
+            mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, tmp, T);
         }else{
             pad_bits                       = (128 - pad_bits) - 1;
             M[i*16 + (15 - (pad_bits/8))] |= 0x1 << (pad_bits % 8);
@@ -670,7 +670,7 @@ LIBLTE_ERROR_ENUM liblte_security_128_eia2(uint8                 *key,
             {
                 tmp[j] = T[j] ^ K2[j] ^ M[i*16 + j];
             }
-            aes_crypt_ecb(&ctx, AES_ENCRYPT, tmp, T);
+            mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, tmp, T);
         }
 
         for(i=0; i<4; i++)

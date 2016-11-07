@@ -11,3 +11,8 @@ add_library(lte
   src/liblte_security.cc
 )
 include_directories(hdr ${CMAKE_SOURCE_DIR}/cmn_hdr)
+
+# install
+file(GLOB HEADER_FILES "hdr/*.h" "${CMAKE_SOURCE_DIR}/cmn_hdr/*.h")
+install(TARGETS lte DESTINATION lib)
+install(FILES ${HEADER_FILES} DESTINATION include/lte)
