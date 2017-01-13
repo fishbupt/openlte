@@ -599,16 +599,28 @@ typedef enum {
   LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_SMS_ONLY,
   LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_N_ITEMS,
 } LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_ENUM;
+
+typedef enum {
+  LIBLTE_MME_PREFERRED_CIOT_NO_ADDITIONAL_INFO = 0,
+  LIBLTE_MME_PREFERRED_CIOT_CONTROL_PLANE_OPTIMIZATION,
+  LIBLTE_MME_PREFERRED_CIOT_USER_PLANE_OPTIMIZATION,
+  LIBLTE_MME_PREFERRED_CIOT_RESERVED,
+  LIBLTE_MME_PREFERRED_CIOT_N_ITMES
+} LIBLTE_MME_PREFERRED_CIOT_NETWORK_ENUM;
+
+typedef struct {
+  LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_ENUM autv;
+  bool saf;
+  LIBLTE_MME_PREFERRED_CIOT_NETWORK_ENUM pnb_ciot;
+} LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT;
 static const char liblte_mme_additional_update_type_text[LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_N_ITEMS][20] = { "No additional info",
   "SMS Only" };
 // Structs
 // Functions
-LIBLTE_ERROR_ENUM liblte_mme_pack_additional_update_type_ie(LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_ENUM aut,
-    uint8 bit_offset,
+LIBLTE_ERROR_ENUM liblte_mme_pack_additional_update_type_ie(LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT* additional_update_type,
     uint8** ie_ptr);
 LIBLTE_ERROR_ENUM liblte_mme_unpack_additional_update_type_ie(uint8** ie_ptr,
-    uint8 bit_offset,
-    LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_ENUM* aut);
+    LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT* additional_update_type);
 
 /*********************************************************************
     IE Name: Authentication Failure Parameter
@@ -983,6 +995,11 @@ typedef struct {
   bool epc_lcs;
   bool emc_bs;
   bool ims_vops;
+  bool erwo_pdn;
+  bool cp_ciot;
+  bool up_ciot;
+  bool s1_u;
+  bool hc_cp_ciot;
 } LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_eps_network_feature_support_ie(LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT* eps_nfs,
@@ -2836,7 +2853,7 @@ typedef struct {
   LIBLTE_MME_SUPPORTED_CODEC_LIST_STRUCT supported_codecs;
   LIBLTE_MME_VOICE_DOMAIN_PREF_AND_UE_USAGE_SETTING_STRUCT voice_domain_pref_and_ue_usage_setting;
   LIBLTE_MME_TMSI_STATUS_ENUM tmsi_status;
-  LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_ENUM additional_update_type;
+  LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT additional_update_type;
   LIBLTE_MME_DEVICE_PROPERTIES_ENUM device_properties;
   LIBLTE_MME_GUTI_TYPE_ENUM old_guti_type;
   uint32 old_p_tmsi_signature;
@@ -3501,7 +3518,7 @@ typedef struct {
   LIBLTE_MME_SUPPORTED_CODEC_LIST_STRUCT supported_codecs;
   LIBLTE_MME_VOICE_DOMAIN_PREF_AND_UE_USAGE_SETTING_STRUCT voice_domain_pref_and_ue_usage_setting;
   LIBLTE_MME_TMSI_STATUS_ENUM tmsi_status;
-  LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_ENUM additional_update_type;
+  LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT additional_update_type;
   LIBLTE_MME_GUTI_TYPE_ENUM old_guti_type;
   LIBLTE_MME_DEVICE_PROPERTIES_ENUM device_properties;
   uint32 old_p_tmsi_signature;
