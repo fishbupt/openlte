@@ -5117,6 +5117,168 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_transaction_identifier_ie(uint8** ie_ptr,
   return (err);
 }
 
+/*********************************************************************
+    IE Name: Header compression configuration
+
+    Description: Negotiates ROHC channel setip parameters, and
+                 provide additional header compression context setup
+                 paramteres.
+
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.22
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_header_compression_configuration_ie(LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT* header_compress_cfg,
+    uint8** ie_ptr)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (header_compress_cfg != NULL && ie_ptr != NULL) {
+    (*ie_ptr)[0] = 4;
+    (*ie_ptr)[1] = header_compress_cfg->profile_0x0002;
+    (*ie_ptr)[1] |= header_compress_cfg->profile_0x0003 << 1;
+    (*ie_ptr)[1] |= header_compress_cfg->profile_0x0004 << 2;
+    (*ie_ptr)[1] |= header_compress_cfg->profile_0x0006 << 3;
+    (*ie_ptr)[1] |= header_compress_cfg->profile_0x0102 << 4;
+    (*ie_ptr)[1] |= header_compress_cfg->profile_0x0103 << 5;
+    (*ie_ptr)[1] |= header_compress_cfg->profile_0x0104 << 6;
+
+    (*ie_ptr)[2] = (header_compress_cfg->max_cid >> 8) & 0xFF;
+    (*ie_ptr)[3] = header_compress_cfg->max_cid & 0xFF;
+    (*ie_ptr)[4] = 0xFF; // spare
+
+    *ie_ptr += 5;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+
+LIBLTE_ERROR_ENUM liblte_mme_unpack_header_compression_configuration_ie(uint8** ie_ptr,
+    LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT* header_compress_cfg)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (header_compress_cfg != NULL && ie_ptr != NULL) {
+    header_compress_cfg->profile_0x0002 = (*ie_ptr)[1] & 0x01;
+    header_compress_cfg->profile_0x0003 = ((*ie_ptr)[1] >> 1) & 0x01;
+    header_compress_cfg->profile_0x0004 = ((*ie_ptr)[1] >> 2) & 0x01;
+    header_compress_cfg->profile_0x0006 = ((*ie_ptr)[1] >> 3) & 0x01;
+    header_compress_cfg->profile_0x0102 = ((*ie_ptr)[1] >> 4) & 0x01;
+    header_compress_cfg->profile_0x0103 = ((*ie_ptr)[1] >> 5) & 0x01;
+    header_compress_cfg->profile_0x0104 = ((*ie_ptr)[1] >> 6) & 0x01;
+
+    header_compress_cfg->max_cid = ((*ie_ptr)[2] << 8);
+    header_compress_cfg->max_cid |= (*ie_ptr)[3];
+
+    *ie_ptr += (*ie_ptr)[0] + 1;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+
+/*********************************************************************
+    IE Name: Control plane only indication
+
+    Description: Indicates that a PDN connection is only for
+                 control plane CIoT EPS optimization.
+
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.23
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_only_indication_ie(LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM cpoi,
+    uint8** ie_ptr)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (ie_ptr != NULL) {
+    (*ie_ptr)[0] |= cpoi;
+
+    *ie_ptr += 1;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_control_plane_only_indication_ie(uint8** ie_ptr,
+    LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM* cpoi)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (ie_ptr != NULL && cpoi != NULL) {
+    *cpoi = (LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM)((*ie_ptr)[0] & 0x01);
+
+    *ie_ptr += 1;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+
+/*********************************************************************
+    IE Name: User data container
+
+    Description: encapsulates the user data transferred between the UE 
+                 and the MME
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.24
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_user_data_container_ie(uint8* data_ptr, uint16 data_length,
+    uint8** ie_ptr)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (data_ptr != NULL & ie_ptr != NULL) {
+    (*ie_ptr)[0] = (data_length >> 8) & 0xFF;
+    (*ie_ptr)[1] = (data_length)&0xFF;
+
+    *ie_ptr += 2;
+
+    *ie_ptr += data_length;
+    memcpy(*ie_ptr, data_ptr, data_length);
+
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_user_data_container_ie(uint8** ie_ptr,
+    uint8* data_ptr, uint16* data_length)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (data_ptr != NULL && ie_ptr != NULL) {
+    *data_length = (*ie_ptr)[0] << 8;
+    *data_length |= (*ie_ptr)[1];
+    *ie_ptr += 2;
+
+    memcpy(data_ptr, *ie_ptr, *data_length);
+    *ie_ptr += (*data_length);
+
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+
+/*********************************************************************
+    IE Name: Release assistance indication
+
+    Description: Informs the network whether:
+                - no further uplink or downlink data transmission is expected; or
+                - only a single downlink data transimission
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.25
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_release_assistance_indication_ie(LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM ddx,
+    uint8** ie_ptr)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (ie_ptr != NULL) {
+    (*ie_ptr)[0] |= ddx & 0x02;
+
+    *ie_ptr += 1;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_release_asssistance_indication_ie(uint8** ie_ptr,
+    LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM* ddx)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (ddx != NULL & ie_ptr != NULL) {
+    *ddx = (LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM)((*ie_ptr)[0] & 0x02);
+
+    *ie_ptr += 1;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+
 /*******************************************************************************
                               MESSAGE FUNCTIONS
 *******************************************************************************/
@@ -9033,7 +9195,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_activate_dedicated_eps_bearer_context_accept_m
     msg_ptr++;
 
     // Message Type
-    *msg_ptr = LIBLTE_MME_MSG_TYPE_ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT;
+    *msg_ptr = LIBLTE_MME_MSG_TYPE_ESM_DATA_TRANSPORT;
     msg_ptr++;
 
     // Protocol Configuration Options
@@ -9598,6 +9760,19 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_activate_default_eps_bearer_context_request_ms
       msg_ptr++;
     }
 
+    // Header Compression Configuration
+    if (act_def_eps_bearer_context_req->header_compress_cfg_present) {
+      *msg_ptr = LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_IEI;
+      msg_ptr++;
+      liblte_mme_pack_header_compression_configuration_ie(&act_def_eps_bearer_context_req->header_compress_cfg, &msg_ptr);
+    }
+
+    // Control Plane Only Indication
+    if (act_def_eps_bearer_context_req->control_plane_only_indication_present) {
+      *msg_ptr = LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_IEI << 4;
+      liblte_mme_pack_control_plane_only_indication_ie(act_def_eps_bearer_context_req->control_plane_only_indication, &msg_ptr);
+    }
+
     // Fill in the number of bytes used
     msg->N_bytes = msg_ptr - msg->msg;
 
@@ -9712,6 +9887,23 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_activate_default_eps_bearer_context_request_
       act_def_eps_bearer_context_req->connectivity_type_present = true;
     } else {
       act_def_eps_bearer_context_req->connectivity_type_present = false;
+    }
+
+    // Header Compression Configuration
+    if (LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_header_compression_configuration_ie(&msg_ptr, &act_def_eps_bearer_context_req->header_compress_cfg);
+      act_def_eps_bearer_context_req->header_compress_cfg_present = true;
+    } else {
+      act_def_eps_bearer_context_req->header_compress_cfg_present = false;
+    }
+
+    // Control Plane Only Indication
+    if ((LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_IEI << 4) == (*msg_ptr & 0xF0)) {
+      liblte_mme_unpack_control_plane_only_indication_ie(&msg_ptr, &act_def_eps_bearer_context_req->control_plane_only_indication);
+      act_def_eps_bearer_context_req->control_plane_only_indication_present = true;
+    } else {
+      act_def_eps_bearer_context_req->control_plane_only_indication_present = false;
     }
 
     err = LIBLTE_SUCCESS;
@@ -11333,6 +11525,84 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_pdn_disconnect_request_msg(LIBLTE_BYTE_MSG_S
       pdn_discon_req->protocol_cnfg_opts_present = false;
     }
 
+    err = LIBLTE_SUCCESS;
+  }
+
+  return (err);
+}
+
+/*********************************************************************
+    Message Name: ESM DATA TRANSPORT
+
+    Description: Sent by the UE or the network in order to carry
+                 user data in an encapsulated format
+                
+
+    Document Reference: 24.301 v13.7.0 Section 8.3.25
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg,
+    LIBLTE_BYTE_MSG_STRUCT* msg)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  uint8* msg_ptr = msg->msg;
+
+  if (data_transport_msg != NULL && msg != NULL) {
+    // Protocol Discriminator and EPS Bearer ID
+    *msg_ptr = (data_transport_msg->eps_bearer_id << 4) | (LIBLTE_MME_PD_EPS_SESSION_MANAGEMENT);
+    msg_ptr++;
+
+    // Procedure Transaction ID
+    *msg_ptr = data_transport_msg->proc_transaction_id;
+    msg_ptr++;
+
+    // Message Type
+    *msg_ptr = LIBLTE_MME_MSG_TYPE_ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT;
+    msg_ptr++;
+
+    // User Data Container
+    liblte_mme_pack_user_data_container_ie(data_transport_msg->data_ptr, data_transport_msg->data_length, &msg_ptr);
+
+    // Release assistance indication
+    if (data_transport_msg->ddx_present) {
+      *msg_ptr = LIBLTE_MME_RELEASE_ASSISTANCE_INDICATION_IEI << 4;
+      liblte_mme_pack_release_assistance_indication_ie(data_transport_msg->ddx, &msg_ptr);
+    }
+
+    // Fill in the number of bytes used
+    msg->N_bytes = msg_ptr - msg->msg;
+
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
+    LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  uint8* msg_ptr = msg->msg;
+
+  if (msg != NULL && data_transport_msg != NULL) {
+    // EPS Bearer ID
+    data_transport_msg->eps_bearer_id = (*msg_ptr >> 4);
+    msg_ptr++;
+
+    // Procedure Transaction ID
+    data_transport_msg->proc_transaction_id = *msg_ptr;
+    msg_ptr++;
+
+    // Skip Message Type
+    msg_ptr++;
+
+    // User Data Container
+    liblte_mme_unpack_user_data_container_ie(&msg_ptr, data_transport_msg->data_ptr, &data_transport_msg->data_length);
+
+    // Release Assistance Indication
+    if ((LIBLTE_MME_RELEASE_ASSISTANCE_INDICATION_IEI << 4) == (*msg_ptr & 0xF0)) {
+      liblte_mme_unpack_release_asssistance_indication_ie(&msg_ptr, &data_transport_msg->ddx);
+      data_transport_msg->ddx_present = true;
+    } else {
+      data_transport_msg->ddx_present = false;
+    }
     err = LIBLTE_SUCCESS;
   }
 

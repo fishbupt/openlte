@@ -2618,6 +2618,99 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_transaction_identifier_ie(LIBLTE_MME_TRANSACTI
 LIBLTE_ERROR_ENUM liblte_mme_unpack_transaction_identifier_ie(uint8** ie_ptr,
     LIBLTE_MME_TRANSACTION_IDENTIFIER_STRUCT* trans_id);
 
+/*********************************************************************
+    IE Name: Header Compression Configuration
+
+    Description: To negotiate ROHC channel setup parameters
+
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.22
+*********************************************************************/
+// Structs
+typedef struct {
+  bool profile_0x0002;
+  bool profile_0x0003;
+  bool profile_0x0004;
+  bool profile_0x0006;
+  bool profile_0x0102;
+  bool profile_0x0103;
+  bool profile_0x0104;
+  uint16 max_cid;
+} LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT;
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_header_compression_configuration_ie(LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT* header_compress_cfg,
+    uint8** ie_ptr);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_header_compression_configuration_ie(uint8** ie_ptr,
+    LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT* header_compress_cfg);
+
+/*********************************************************************
+    IE Name: Control plane only indication
+
+    Description: Indicates that a PDN connection is only for
+                 control plane CIoT EPS optimization.
+
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.23
+*********************************************************************/
+// Defines
+// Enums
+typedef enum {
+  LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_NOT_SET = 0,
+  LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_IS_SET,
+  LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_N_ITEMS,
+} LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM;
+static const char liblte_mme_control_plane_only_indication_text[LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_N_ITEMS][100] = {
+  "PDN connection can be used with user plane radio bearer",
+  "PDN connection can be used for control plane CIoT EPS optimization only"
+};
+// Structs
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_only_indication_ie(LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM cpoi,
+    uint8** ie_ptr);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_control_plane_only_indication_ie(uint8** ie_ptr,
+    LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM* cpoi);
+
+/*********************************************************************
+    IE Name: User data container
+
+    Description: encapsulates the user data transferred between the UE 
+                 and the MME
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.24
+*********************************************************************/
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_user_data_container_ie(uint8* data_ptr, uint16 data_length,
+    uint8** ie_ptr);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_user_data_container_ie(uint8** ie_ptr,
+    uint8* data_ptr, uint16* data_length);
+
+/*********************************************************************
+    IE Name: Release assistance indication
+
+    Description: Informs the network whether:
+                - no further uplink or downlink data transmission is expected; or
+                - only a single downlink data transimission
+    Document Reference: 24.301 v13.7.0 Section 9.9.4.25
+*********************************************************************/
+// Defines
+// Enums
+typedef enum {
+  LIBLTE_MME_DDX_NO_INFORMATION = 0,
+  LIBLTE_MME_DDX_NO_FURTHTER_DATA,
+  LIBLTE_MME_DDX_ONLY_SINGLE_DATA,
+  LIBLTE_MME_DDX_RESERVED,
+  LIBLTE_MME_DDX_N_ITEMS
+} LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM;
+static const char liblte_mme_downlink_data_expected_text[LIBLTE_MME_DDX_N_ITEMS][60] = {
+  "no information available",
+  "no further data transmission",
+  "only a single downlink data transmission",
+  "reserved"
+};
+// Structs
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_release_assistance_indication_ie(LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM ddx,
+    uint8** ie_ptr);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_release_asssistance_indication_ie(uint8** ie_ptr,
+    LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM* ddx);
+
 /*******************************************************************************
                               MESSAGE DECLARATIONS
 *******************************************************************************/
@@ -2691,6 +2784,7 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_transaction_identifier_ie(uint8** ie_ptr,
 #define LIBLTE_MME_MSG_TYPE_ESM_INFORMATION_RESPONSE 0xDA
 #define LIBLTE_MME_MSG_TYPE_NOTIFICATION 0xDB
 #define LIBLTE_MME_MSG_TYPE_ESM_STATUS 0xE8
+#define LIBLTE_MME_MSG_TYPE_ESM_DATA_TRANSPORT 0xEB
 // Enums
 // Structs
 // Functions
@@ -3786,6 +3880,8 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_activate_default_eps_bearer_context_reject_m
 #define LIBLTE_MME_APN_AMBR_IEI 0x5E
 #define LIBLTE_MME_ESM_CAUSE_IEI 0x58
 #define LIBLTE_MME_CONNECTIVITY_TYPE_IEI 0xB
+#define LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_IEI 0x66
+#define LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_IEI 0x9
 // Enums
 // Structs
 typedef struct {
@@ -3796,6 +3892,8 @@ typedef struct {
   LIBLTE_MME_QUALITY_OF_SERVICE_STRUCT negotiated_qos;
   LIBLTE_MME_APN_AGGREGATE_MAXIMUM_BIT_RATE_STRUCT apn_ambr;
   LIBLTE_MME_PROTOCOL_CONFIG_OPTIONS_STRUCT protocol_cnfg_opts;
+  LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT header_compress_cfg;
+  LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM control_plane_only_indication;
   uint8 eps_bearer_id;
   uint8 proc_transaction_id;
   uint8 llc_sapi;
@@ -3812,6 +3910,8 @@ typedef struct {
   bool esm_cause_present;
   bool protocol_cnfg_opts_present;
   bool connectivity_type_present;
+  bool header_compress_cfg_present;
+  bool control_plane_only_indication_present;
 } LIBLTE_MME_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REQUEST_MSG_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_activate_default_eps_bearer_context_request_msg(LIBLTE_MME_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REQUEST_MSG_STRUCT* act_def_eps_bearer_context_req,
@@ -4271,4 +4371,30 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_pdn_disconnect_request_msg(LIBLTE_MME_PDN_DISC
 LIBLTE_ERROR_ENUM liblte_mme_unpack_pdn_disconnect_request_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
     LIBLTE_MME_PDN_DISCONNECT_REQUEST_MSG_STRUCT* pdn_discon_req);
 
+/*********************************************************************
+    Message Name: ESM DATA TRANSPORT
+
+    Description: Sent by the UE or the network in order to carry
+                 user data in an encapsulated format
+                
+
+    Document Reference: 24.301 v13.7.0 Section 8.3.25
+*********************************************************************/
+// Defines
+#define LIBLTE_MME_RELEASE_ASSISTANCE_INDICATION_IEI 0xF
+// Enums
+// Structs
+typedef struct {
+  uint8 eps_bearer_id;
+  uint8 proc_transaction_id;
+  uint8* data_ptr;
+  uint16 data_length;
+  LIBLTE_MME_DOWNLINK_DATA_EXPECTED_ENUM ddx;
+  bool ddx_present;
+} LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT;
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg,
+    LIBLTE_BYTE_MSG_STRUCT* msg);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
+    LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg);
 #endif /* __LIBLTE_MME_H__ */
