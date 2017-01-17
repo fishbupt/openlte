@@ -4044,6 +4044,80 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_guti_type_ie(uint8** ie_ptr,
 }
 
 /*********************************************************************
+    IE Name: Data Service Type
+
+    Description: Specifies the purpose of the CONTROL PLANE SERVICE
+                 REQUEST message
+
+    Document Reference: 24.301 v14.0.1 Section 9.9.3.47
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_data_service_type_ie(LIBLTE_MME_DATA_SERVICE_TYPE_STRUCT data_service_type,
+    uint8 bit_offset,
+    uint8** ie_ptr)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (ie_ptr != NULL) {
+    (*ie_ptr)[0] |= data_service_type.data_service_type << bit_offset;
+
+    (*ie_ptr)[0] |= data_service_type.rb_active << (bit_offset + 3);
+
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_data_service_type_ie(uint8** ie_ptr,
+    uint8 bit_offset,
+    LIBLTE_MME_DATA_SERVICE_TYPE_STRUCT* data_service_type)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (data_service_type != NULL && ie_ptr != NULL) {
+    data_service_type->data_service_type = (LIBLTE_MME_DATA_SERVICE_TYPE_ENUM)(((*ie_ptr)[0] >> bit_offset) & 0x07);
+    data_service_type->rb_active = ((*ie_ptr)[0] >> (bit_offset + 3)) & 0x01;
+
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+
+/*********************************************************************
+    IE Name: Extended DRX Parameters
+
+    Description: Indicates that the MS wants to use eDRX and for the 
+                 network to indicate the Paging Time Windows length 
+                 value and the extended DRX cycle value to be used for
+                 eDRX
+
+    Document Reference: 24.301 v13.7.0 Section 9.9.3.46
+                        24.008 v14.2.0 Section 10.5.5.32
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_extended_drx_ie(LIBLTE_MME_EXTENDED_DRX_STRUCT* eDrx,
+    uint8** ie_ptr)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (eDrx != NULL && ie_ptr != NULL) {
+    (*ie_ptr)[0] = 1; // length
+    (*ie_ptr)[1] = eDrx->eDRX_value;
+    (*ie_ptr)[1] |= eDrx->paging_time_window << 4;
+
+    *ie_ptr += 2;
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_extended_drx_ie(uint8** ie_ptr,
+    LIBLTE_MME_EXTENDED_DRX_STRUCT* eDrx)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  if (eDrx != NULL && ie_ptr != NULL) {
+    eDrx->eDRX_value = (*ie_ptr)[1] & 0xFF;
+    eDrx->paging_time_window = ((*ie_ptr)[1] >> 4) & 0xFF;
+
+    *ie_ptr += (*ie_ptr)[0];
+    err = LIBLTE_SUCCESS;
+  }
+  return err;
+}
+/*********************************************************************
     IE Name: Access Point Name
 
     Description: Identifies the packet data network to which the GPRS
@@ -5514,6 +5588,13 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_accept_msg(LIBLTE_MME_ATTACH_ACCEPT_MSG
       liblte_mme_pack_gprs_timer_3_ie(&attach_accept->t3412_ext, &msg_ptr);
     }
 
+    // Extended DRX Parameter
+    if (attach_accept->eDrx_param_present) {
+      *msg_ptr = LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI;
+      msg_ptr++;
+      liblte_mme_pack_extended_drx_ie(&attach_accept->eDrx_param, &msg_ptr);
+    }
+
     // Fill in the number of bytes used
     msg->N_bytes = msg_ptr - msg->msg;
 
@@ -5662,6 +5743,15 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_attach_accept_msg(LIBLTE_BYTE_MSG_STRUCT* ms
       attach_accept->t3412_ext_present = true;
     } else {
       attach_accept->t3412_ext_present = false;
+    }
+
+    // Extended DRX Parameter
+    if (LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_extended_drx_ie(&msg_ptr, &attach_accept->eDrx_param);
+      attach_accept->eDrx_param_present = true;
+    } else {
+      attach_accept->eDrx_param_present = false;
     }
 
     err = LIBLTE_SUCCESS;
@@ -5990,6 +6080,13 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_request_msg(LIBLTE_MME_ATTACH_REQUEST_M
       msg_ptr++;
     }
 
+    // Extended DRX Parameter
+    if (attach_req->eDrx_param_present) {
+      *msg_ptr = LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI;
+      msg_ptr++;
+      liblte_mme_pack_extended_drx_ie(&attach_req->eDrx_param, &msg_ptr);
+    }
+
     // Fill in the number of bytes used
     msg->N_bytes = msg_ptr - msg->msg;
 
@@ -6157,6 +6254,14 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_attach_request_msg(LIBLTE_BYTE_MSG_STRUCT* m
       attach_req->old_guti_type_present = false;
     }
 
+    // Extended DRX Parameter
+    if (LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_extended_drx_ie(&msg_ptr, &attach_req->eDrx_param);
+      attach_req->eDrx_param_present = true;
+    } else {
+      attach_req->eDrx_param_present = false;
+    }
     err = LIBLTE_SUCCESS;
   }
 
@@ -8089,6 +8194,13 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_accept_msg(LIBLTE_MME_TRA
       liblte_mme_pack_gprs_timer_3_ie(&ta_update_accept->t3412_ext, &msg_ptr);
     }
 
+    // Extended DRX Parameter
+    if (ta_update_accept->eDrx_param_present) {
+      *msg_ptr = LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI;
+      msg_ptr++;
+      liblte_mme_pack_extended_drx_ie(&ta_update_accept->eDrx_param, &msg_ptr);
+    }
+
     // Fill in the number of bytes used
     msg->N_bytes = msg_ptr - msg->msg;
 
@@ -8255,6 +8367,15 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_tracking_area_update_accept_msg(LIBLTE_BYTE_
       ta_update_accept->t3412_ext_present = true;
     } else {
       ta_update_accept->t3412_ext_present = false;
+    }
+
+    // Extended DRX Parameter
+    if (LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_extended_drx_ie(&msg_ptr, &ta_update_accept->eDrx_param);
+      ta_update_accept->eDrx_param_present = true;
+    } else {
+      ta_update_accept->eDrx_param_present = false;
     }
 
     err = LIBLTE_SUCCESS;
@@ -8643,6 +8764,13 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_request_msg(LIBLTE_MME_TR
       msg_ptr++;
     }
 
+    // Extended DRX Parameter
+    if (ta_update_req->eDrx_param_present) {
+      *msg_ptr = LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI;
+      msg_ptr++;
+      liblte_mme_pack_extended_drx_ie(&ta_update_req->eDrx_param, &msg_ptr);
+    }
+
     // Fill in the number of bytes used
     msg->N_bytes = msg_ptr - msg->msg;
 
@@ -8867,6 +8995,15 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_tracking_area_update_request_msg(LIBLTE_BYTE
       ta_update_req->device_properties_present = true;
     } else {
       ta_update_req->device_properties_present = false;
+    }
+
+    // Extended DRX parameter
+    if (LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_extended_drx_ie(&msg_ptr, &ta_update_req->eDrx_param);
+      ta_update_req->eDrx_param_present = true;
+    } else {
+      ta_update_req->eDrx_param_present = false;
     }
 
     err = LIBLTE_SUCCESS;
@@ -9162,6 +9299,262 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_uplink_generic_nas_transport_msg(LIBLTE_BYTE
 
     // Additional Information
     liblte_mme_unpack_additional_information_ie(&msg_ptr, &ul_generic_nas_transport->add_info);
+
+    err = LIBLTE_SUCCESS;
+  }
+
+  return (err);
+}
+
+/*********************************************************************
+    Message Name: Control Plane Service Request
+
+    Description: Sent by the UE to the network when the UE is using
+                 EPS services with control plane CIoT EPS optimization
+
+    Document Reference: 24.301 v14.0.1 Section 8.2.33
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_service_request_msg(LIBLTE_MME_CONTROL_PLANE_SERVICE_REQUEST_MSG_STRUCT* cp_service_req,
+    uint8 sec_hdr_type,
+    uint8* key_256,
+    uint32 count,
+    uint8 direction,
+    LIBLTE_BYTE_MSG_STRUCT* msg)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  uint8* msg_ptr = msg->msg;
+
+  if (cp_service_req != NULL && key_256 != NULL && msg != NULL) {
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
+      // Protocol Discriminator and Security Header Type
+      *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
+      msg_ptr++;
+
+      // MAC will be filled in later
+      msg_ptr += 4;
+
+      // Sequence Number
+      *msg_ptr = count & 0xFF;
+      msg_ptr++;
+    }
+
+    // Protocol Discriminator and Security Header Type
+    *msg_ptr = (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
+    msg_ptr++;
+
+    // Message Type
+    *msg_ptr = LIBLTE_MME_MSG_TYPE_CONTROL_PLANE_SERVICE_REQUEST;
+    msg_ptr++;
+
+    // Data Service Type & NAS Key Set Identifier
+    *msg_ptr = 0;
+    liblte_mme_pack_data_service_type_ie(cp_service_req->data_service_type, 0, &msg_ptr);
+    liblte_mme_pack_nas_key_set_id_ie(&cp_service_req->nas_ksi, 4, &msg_ptr);
+    msg_ptr++;
+
+    // ESM Message Container
+    if (cp_service_req->esm_msg_present) {
+      *msg_ptr = LIBLTE_MME_ESM_MSG_CONTAINER_IEI;
+      msg_ptr++;
+      liblte_mme_pack_esm_message_container_ie(&cp_service_req->esm_msg, &msg_ptr);
+    }
+
+    // NAS Message Container
+    if (cp_service_req->nas_msg_present) {
+      *msg_ptr = LIBLTE_MME_NAS_MSG_CONTAINER_IEI;
+      msg_ptr++;
+      liblte_mme_pack_nas_message_container_ie(&cp_service_req->nas_msg, &msg_ptr);
+    }
+
+    // EPS bearer context status
+    if (cp_service_req->eps_bearer_context_status_present) {
+      *msg_ptr = LIBLTE_MME_EPS_BEARER_CONTEXT_STATUS_IEI;
+      msg_ptr++;
+      liblte_mme_pack_eps_bearer_context_status_ie(&cp_service_req->eps_bearer_context_status, &msg_ptr);
+    }
+
+    // Device properties
+    if (cp_service_req->device_properties_present) {
+      *msg_ptr = LIBLTE_MME_EXTENDED_SERVICE_REQUEST_DEVICE_PROPERTIES_IEI << 4;
+      liblte_mme_pack_device_properties_ie(cp_service_req->device_properties, 0, &msg_ptr);
+      msg_ptr++;
+    }
+
+    // Fill in the number of bytes used
+    msg->N_bytes = msg_ptr - msg->msg;
+
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
+      // Calculate MAC
+      liblte_security_128_eia2(&key_256[16],
+          count,
+          0,
+          direction,
+          &msg->msg[5],
+          msg->N_bytes - 5,
+          &msg->msg[1]);
+    }
+
+    err = LIBLTE_SUCCESS;
+  }
+
+  return (err);
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_control_plane_service_request_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
+    LIBLTE_MME_CONTROL_PLANE_SERVICE_REQUEST_MSG_STRUCT* cp_service_req)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  uint8* msg_ptr = msg->msg;
+  uint8 sec_hdr_type;
+
+  if (msg != NULL && cp_service_req != NULL) {
+    // Security Header Type
+    sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == sec_hdr_type) {
+      msg_ptr++;
+    } else {
+      msg_ptr += 7;
+    }
+
+    // Skip Message Type
+    msg_ptr++;
+
+    // Data Serice Type & Nas Key Set Identifier
+    liblte_mme_unpack_data_service_type_ie(&msg_ptr, 0, &cp_service_req->data_service_type);
+    liblte_mme_unpack_nas_key_set_id_ie(&msg_ptr, 0, &cp_service_req->nas_ksi);
+    msg_ptr++;
+
+    // ESM Message Container
+    if (LIBLTE_MME_ESM_MSG_CONTAINER_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_esm_message_container_ie(&msg_ptr, &cp_service_req->esm_msg);
+      cp_service_req->esm_msg_present = true;
+    } else {
+      cp_service_req->esm_msg_present = false;
+    }
+
+    // NAS Message Container
+    if (LIBLTE_MME_NAS_MSG_CONTAINER_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_nas_message_container_ie(&msg_ptr, &cp_service_req->nas_msg);
+      cp_service_req->nas_msg_present = true;
+    } else {
+      cp_service_req->nas_msg_present = false;
+    }
+
+    // EPS bearer context status
+    if (LIBLTE_MME_EPS_BEARER_CONTEXT_STATUS_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_eps_bearer_context_status_ie(&msg_ptr, &cp_service_req->eps_bearer_context_status);
+      cp_service_req->eps_bearer_context_status_present = true;
+    } else {
+      cp_service_req->eps_bearer_context_status_present = false;
+    }
+
+    // Device Properties
+    if ((LIBLTE_MME_EXTENDED_SERVICE_REQUEST_DEVICE_PROPERTIES_IEI << 4) == (*msg_ptr & 0xF0)) {
+      liblte_mme_unpack_device_properties_ie(&msg_ptr, 0, &cp_service_req->device_properties);
+      msg_ptr++;
+      cp_service_req->device_properties_present = true;
+    } else {
+      cp_service_req->device_properties_present = false;
+    }
+    err = LIBLTE_SUCCESS;
+  }
+
+  return (err);
+}
+
+/*********************************************************************
+    Message Name: Service Accept
+
+    Description: Sent by the network in response to the CONTROL PLANE
+                 SERVICE REQUEST message.
+
+    Document Reference: 24.301 v14.0.1 Section 8.2.34
+*********************************************************************/
+LIBLTE_ERROR_ENUM liblte_mme_pack_service_accept_msg(LIBLTE_MME_SERVICE_ACCEPT_MSG_STRUCT* service_accept,
+    uint8 sec_hdr_type,
+    uint8* key_256,
+    uint32 count,
+    uint8 direction,
+    LIBLTE_BYTE_MSG_STRUCT* msg)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  uint8* msg_ptr = msg->msg;
+
+  if (service_accept != NULL && key_256 != NULL && msg != NULL) {
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
+      // Protocol Discriminator and Security Header Type
+      *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
+      msg_ptr++;
+
+      // MAC will be filled in later
+      msg_ptr += 4;
+
+      // Sequence Number
+      *msg_ptr = count & 0xFF;
+      msg_ptr++;
+    }
+
+    // Protocol Discriminator and Security Header Type
+    *msg_ptr = (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
+    msg_ptr++;
+
+    // Message Type
+    *msg_ptr = LIBLTE_MME_MSG_TYPE_SERVICE_ACCEPT;
+    msg_ptr++;
+
+    // EPS bearer context status
+    if (service_accept->eps_bearer_context_status_present) {
+      liblte_mme_pack_eps_bearer_context_status_ie(&service_accept->eps_bearer_context_status, &msg_ptr);
+    }
+
+    // Fill in the number of bytes used
+    msg->N_bytes = msg_ptr - msg->msg;
+
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
+      // Calculate MAC
+      liblte_security_128_eia2(&key_256[16],
+          count,
+          0,
+          direction,
+          &msg->msg[5],
+          msg->N_bytes - 5,
+          &msg->msg[1]);
+    }
+
+    err = LIBLTE_SUCCESS;
+  }
+
+  return (err);
+}
+LIBLTE_ERROR_ENUM liblte_mme_unpack_service_accept_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
+    LIBLTE_MME_SERVICE_ACCEPT_MSG_STRUCT* service_accept)
+{
+  LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
+  uint8* msg_ptr = msg->msg;
+  uint8 sec_hdr_type;
+
+  if (msg != NULL && service_accept != NULL) {
+    // Security Header Type
+    sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == sec_hdr_type) {
+      msg_ptr++;
+    } else {
+      msg_ptr += 7;
+    }
+
+    // Skip Message Type
+    msg_ptr++;
+
+    // EPS bearer context status
+    if (LIBLTE_MME_EPS_BEARER_CONTEXT_STATUS_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_eps_bearer_context_status_ie(&msg_ptr, &service_accept->eps_bearer_context_status);
+      service_accept->eps_bearer_context_status_present = true;
+    } else {
+      service_accept->eps_bearer_context_status_present = false;
+    }
 
     err = LIBLTE_SUCCESS;
   }

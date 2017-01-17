@@ -1886,6 +1886,63 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_guti_type_ie(uint8** ie_ptr,
     LIBLTE_MME_GUTI_TYPE_ENUM* guti_type);
 
 /*********************************************************************
+    IE Name: Extended DRX Parameters
+
+    Description: Indicates that the MS wants to use eDRX and for the 
+                 network to indicate the Paging Time Windows length 
+                 value and the extended DRX cycle value to be used for
+                 eDRX
+
+    Document Reference: 24.301 v13.7.0 Section 9.9.3.46
+                        24.008 v14.0.2 Section 10.5.5.32
+*********************************************************************/
+// Defines
+// Enums
+
+typedef struct {
+  uint16 paging_time_window;
+  uint16 eDRX_value;
+} LIBLTE_MME_EXTENDED_DRX_STRUCT;
+// Structs
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_extended_drx_ie(LIBLTE_MME_EXTENDED_DRX_STRUCT* eDrx,
+    uint8** ie_ptr);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_extended_drx_ie(uint8** ie_ptr,
+    LIBLTE_MME_EXTENDED_DRX_STRUCT* eDrx);
+
+/*********************************************************************
+    IE Name: Data Service Type
+
+    Description: Specifies the purpose of the CONTROL PLANE SERVICE
+                 REQUEST message
+
+    Document Reference: 24.301 v14.0.1 Section 9.9.3.47
+*********************************************************************/
+// Defines
+// Enums
+typedef enum {
+  LIBLTE_MME_DATA_SERVICE_TYPE_MO_REQUST = 0,
+  LIBLTE_MME_DATA_SERVICE_TYPE_MT_REQUEST,
+  LIBLTE_MME_DATA_SERVICE_TYPE_N_ITEMS,
+} LIBLTE_MME_DATA_SERVICE_TYPE_ENUM;
+
+typedef struct {
+  bool rb_active;
+  LIBLTE_MME_DATA_SERVICE_TYPE_ENUM data_service_type;
+} LIBLTE_MME_DATA_SERVICE_TYPE_STRUCT;
+static const char liblte_mme_control_data_service_type_text[LIBLTE_MME_DATA_SERVICE_TYPE_N_ITEMS][60] = {
+  "Mobile originating request",
+  "Mobile terminating request"
+};
+// Structs
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_data_service_type_ie(LIBLTE_MME_DATA_SERVICE_TYPE_STRUCT data_service_type,
+    uint8 bit_offset,
+    uint8** ie_ptr);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_data_service_type_ie(uint8** ie_ptr,
+    uint8 bit_offset,
+    LIBLTE_MME_DATA_SERVICE_TYPE_STRUCT* data_service_type);
+/*********************************************************************
     IE Name: Access Point Name
 
     Description: Identifies the packet data network to which the GPRS
@@ -2742,7 +2799,9 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_release_asssistance_indication_ie(uint8** ie
 #define LIBLTE_MME_MSG_TYPE_TRACKING_AREA_UPDATE_COMPLETE 0x4A
 #define LIBLTE_MME_MSG_TYPE_TRACKING_AREA_UPDATE_REJECT 0x4B
 #define LIBLTE_MME_MSG_TYPE_EXTENDED_SERVICE_REQUEST 0x4C
+#define LIBLTE_MME_MSG_TYPE_CONTROL_PLANE_SERVICE_REQUEST 0x4D
 #define LIBLTE_MME_MSG_TYPE_SERVICE_REJECT 0x4E
+#define LIBLTE_MME_MSG_TYPE_SERVICE_ACCEPT 0x4F
 #define LIBLTE_MME_MSG_TYPE_GUTI_REALLOCATION_COMMAND 0x50
 #define LIBLTE_MME_MSG_TYPE_GUTI_REALLOCATION_COMPLETE 0x51
 #define LIBLTE_MME_MSG_TYPE_AUTHENTICATION_REQUEST 0x52
@@ -2818,6 +2877,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_protected_nas_msg(LIBLTE_BYTE_MSG_STR
 #define LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_IEI 0x64
 #define LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_IEI 0xF
 #define LIBLTE_MME_T3412_EXTENDED_VALUE_IEI 0x5E
+#define LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI 0x6E
 // Enums
 // Structs
 typedef struct {
@@ -2834,6 +2894,7 @@ typedef struct {
   LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT eps_network_feature_support;
   LIBLTE_MME_GPRS_TIMER_3_STRUCT t3412_ext;
   LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM additional_update_result;
+  LIBLTE_MME_EXTENDED_DRX_STRUCT eDrx_param;
   uint8 eps_attach_result;
   uint8 emm_cause;
   bool guti_present;
@@ -2847,6 +2908,7 @@ typedef struct {
   bool eps_network_feature_support_present;
   bool additional_update_result_present;
   bool t3412_ext_present;
+  bool eDrx_param_present;
 } LIBLTE_MME_ATTACH_ACCEPT_MSG_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_attach_accept_msg(LIBLTE_MME_ATTACH_ACCEPT_MSG_STRUCT* attach_accept,
@@ -2950,6 +3012,7 @@ typedef struct {
   LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT additional_update_type;
   LIBLTE_MME_DEVICE_PROPERTIES_ENUM device_properties;
   LIBLTE_MME_GUTI_TYPE_ENUM old_guti_type;
+  LIBLTE_MME_EXTENDED_DRX_STRUCT eDrx_param;
   uint32 old_p_tmsi_signature;
   uint8 eps_attach_type;
   bool old_p_tmsi_signature_present;
@@ -2966,6 +3029,7 @@ typedef struct {
   bool voice_domain_pref_and_ue_usage_setting_present;
   bool device_properties_present;
   bool old_guti_type_present;
+  bool eDrx_param_present;
 } LIBLTE_MME_ATTACH_REQUEST_MSG_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_attach_request_msg(LIBLTE_MME_ATTACH_REQUEST_MSG_STRUCT* attach_req,
@@ -3501,6 +3565,7 @@ typedef struct {
   LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT eps_network_feature_support;
   LIBLTE_MME_GPRS_TIMER_3_STRUCT t3412_ext;
   LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM additional_update_result;
+  LIBLTE_MME_EXTENDED_DRX_STRUCT eDrx_param;
   uint8 eps_update_result;
   uint8 emm_cause;
   bool t3412_present;
@@ -3517,6 +3582,7 @@ typedef struct {
   bool eps_network_feature_support_present;
   bool additional_update_result_present;
   bool t3412_ext_present;
+  bool eDrx_param_present;
 } LIBLTE_MME_TRACKING_AREA_UPDATE_ACCEPT_MSG_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_accept_msg(LIBLTE_MME_TRACKING_AREA_UPDATE_ACCEPT_MSG_STRUCT* ta_update_accept,
@@ -3615,6 +3681,7 @@ typedef struct {
   LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT additional_update_type;
   LIBLTE_MME_GUTI_TYPE_ENUM old_guti_type;
   LIBLTE_MME_DEVICE_PROPERTIES_ENUM device_properties;
+  LIBLTE_MME_EXTENDED_DRX_STRUCT eDrx_param;
   uint32 old_p_tmsi_signature;
   uint32 nonce_ue;
   uint8 gprs_ciphering_ksn;
@@ -3639,6 +3706,7 @@ typedef struct {
   bool voice_domain_pref_and_ue_usage_setting_present;
   bool old_guti_type_present;
   bool device_properties_present;
+  bool eDrx_param_present;
 } LIBLTE_MME_TRACKING_AREA_UPDATE_REQUEST_MSG_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_request_msg(LIBLTE_MME_TRACKING_AREA_UPDATE_REQUEST_MSG_STRUCT* ta_update_req,
@@ -3727,6 +3795,66 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_generic_nas_transport_msg(LIBLTE_MME_UP
     LIBLTE_BYTE_MSG_STRUCT* msg);
 LIBLTE_ERROR_ENUM liblte_mme_unpack_uplink_generic_nas_transport_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
     LIBLTE_MME_UPLINK_GENERIC_NAS_TRANSPORT_MSG_STRUCT* ul_generic_nas_transport);
+
+/*********************************************************************
+    Message Name: Control Plane Service Request
+
+    Description: Sent by the UE to the network when the UE is using
+                 EPS services with control plane CIoT EPS optimization
+
+    Document Reference: 24.301 v14.0.1 Section 8.2.33
+*********************************************************************/
+// Defines
+#define LIBLTE_MME_NAS_MSG_CONTAINER_IEI 0xD
+// Enums
+// Structs
+typedef struct {
+  LIBLTE_MME_DATA_SERVICE_TYPE_STRUCT data_service_type;
+  LIBLTE_MME_NAS_KEY_SET_ID_STRUCT nas_ksi;
+  LIBLTE_BYTE_MSG_STRUCT esm_msg;
+  LIBLTE_BYTE_MSG_STRUCT nas_msg;
+  LIBLTE_MME_EPS_BEARER_CONTEXT_STATUS_STRUCT eps_bearer_context_status;
+  LIBLTE_MME_DEVICE_PROPERTIES_ENUM device_properties;
+  bool esm_msg_present;
+  bool nas_msg_present;
+  bool eps_bearer_context_status_present;
+  bool device_properties_present;
+
+} LIBLTE_MME_CONTROL_PLANE_SERVICE_REQUEST_MSG_STRUCT;
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_service_request_msg(LIBLTE_MME_CONTROL_PLANE_SERVICE_REQUEST_MSG_STRUCT* cp_service_req,
+    uint8 sec_hdr_type,
+    uint8* key_256,
+    uint32 count,
+    uint8 direction,
+    LIBLTE_BYTE_MSG_STRUCT* msg);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_control_plane_service_request_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
+    LIBLTE_MME_CONTROL_PLANE_SERVICE_REQUEST_MSG_STRUCT* cp_service_req);
+
+/*********************************************************************
+    Message Name: Service Accept
+
+    Description: Sent by the network in response to the CONTROL PLANE
+                 SERVICE REQUEST message.
+
+    Document Reference: 24.301 v14.0.1 Section 8.2.34
+*********************************************************************/
+// Defines
+// Enums
+// Structs
+typedef struct {
+  LIBLTE_MME_EPS_BEARER_CONTEXT_STATUS_STRUCT eps_bearer_context_status;
+  bool eps_bearer_context_status_present;
+} LIBLTE_MME_SERVICE_ACCEPT_MSG_STRUCT;
+// Functions
+LIBLTE_ERROR_ENUM liblte_mme_pack_service_accept_msg(LIBLTE_MME_SERVICE_ACCEPT_MSG_STRUCT* service_accept,
+    uint8 sec_hdr_type,
+    uint8* key_256,
+    uint32 count,
+    uint8 direction,
+    LIBLTE_BYTE_MSG_STRUCT* msg);
+LIBLTE_ERROR_ENUM liblte_mme_unpack_service_accept_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
+    LIBLTE_MME_SERVICE_ACCEPT_MSG_STRUCT* service_accept);
 
 /*********************************************************************
     Message Name: Activate Dedicated EPS Bearer Context Accept
