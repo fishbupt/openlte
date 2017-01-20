@@ -5296,8 +5296,8 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_user_data_container_ie(uint8* data_ptr, uint16
 
     *ie_ptr += 2;
 
-    *ie_ptr += data_length;
     memcpy(*ie_ptr, data_ptr, data_length);
+    *ie_ptr += data_length;
 
     err = LIBLTE_SUCCESS;
   }
@@ -11949,7 +11949,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRA
     msg_ptr++;
 
     // Message Type
-    *msg_ptr = LIBLTE_MME_MSG_TYPE_ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT;
+    *msg_ptr = LIBLTE_MME_MSG_TYPE_ESM_DATA_TRANSPORT;
     msg_ptr++;
 
     // User Data Container
