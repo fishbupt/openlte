@@ -11934,12 +11934,29 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_pdn_disconnect_request_msg(LIBLTE_BYTE_MSG_S
     Document Reference: 24.301 v13.7.0 Section 8.3.25
 *********************************************************************/
 LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg,
+    uint8 sec_hdr_type,
+    uint8* key_256,
+    uint32 count,
+    uint8 direction,
     LIBLTE_BYTE_MSG_STRUCT* msg)
 {
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (data_transport_msg != NULL && msg != NULL) {
+  if (data_transport_msg != NULL && key_256 != NULL && msg != NULL) {
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
+      // Protocol Discriminator and Security Header Type
+      *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
+      msg_ptr++;
+
+      // MAC will be filled in later
+      msg_ptr += 4;
+
+      // Sequence Number
+      *msg_ptr = count & 0xFF;
+      msg_ptr++;
+    }
+
     // Protocol Discriminator and EPS Bearer ID
     *msg_ptr = (data_transport_msg->eps_bearer_id << 4) | (LIBLTE_MME_PD_EPS_SESSION_MANAGEMENT);
     msg_ptr++;
@@ -11973,8 +11990,16 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUC
 {
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
+  uint8 sec_hdr_type;
 
   if (msg != NULL && data_transport_msg != NULL) {
+    // Security Header Type
+    sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == sec_hdr_type) {
+      msg_ptr++;
+    } else {
+      msg_ptr += 7;
+    }
     // EPS Bearer ID
     data_transport_msg->eps_bearer_id = (*msg_ptr >> 4);
     msg_ptr++;

@@ -4522,6 +4522,10 @@ typedef struct {
 } LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT;
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg,
+    uint8 sec_hdr_type,
+    uint8* key_256,
+    uint32 count,
+    uint8 direction,
     LIBLTE_BYTE_MSG_STRUCT* msg);
 LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
     LIBLTE_MME_ESM_DATA_TRANSPORT_MSG_STRUCT* data_transport_msg);
