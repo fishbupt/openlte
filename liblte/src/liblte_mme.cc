@@ -1372,7 +1372,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_additional_update_type_ie(LIBLTE_MME_ADDITIONA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
 
   if (ie_ptr != NULL) {
-    **ie_ptr = additional_update_type->autv;
+    **ie_ptr |= additional_update_type->autv;
     **ie_ptr |= additional_update_type->saf << 1;
     **ie_ptr |= additional_update_type->pnb_ciot << 2;
 
