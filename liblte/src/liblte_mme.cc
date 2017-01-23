@@ -11996,9 +11996,8 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUC
     // Security Header Type
     sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == sec_hdr_type) {
-      msg_ptr++;
     } else {
-      msg_ptr += 7;
+      msg_ptr += 6;
     }
     // EPS Bearer ID
     data_transport_msg->eps_bearer_id = (*msg_ptr >> 4);
