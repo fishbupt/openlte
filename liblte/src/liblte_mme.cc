@@ -5333,7 +5333,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_release_assistance_indication_ie(LIBLTE_MME_DO
 {
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   if (ie_ptr != NULL) {
-    (*ie_ptr)[0] |= ddx & 0x02;
+    (*ie_ptr)[0] |= (ddx & 0x03);
 
     *ie_ptr += 1;
     err = LIBLTE_SUCCESS;
