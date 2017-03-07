@@ -5417,7 +5417,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_protected_nas_msg(LIBLTE_BYTE_MSG_STR
   uint8* msg_ptr = sec_msg->msg;
   uint32 i;
 
-  if (msg != NULL && key_256 != NULL && sec_msg != NULL) {
+  if (msg != NULL &&  sec_msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -5442,7 +5442,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_protected_nas_msg(LIBLTE_BYTE_MSG_STR
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -5475,7 +5475,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_accept_msg(LIBLTE_MME_ATTACH_ACCEPT_MSG
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (attach_accept != NULL && key_256 != NULL && msg != NULL) {
+  if (attach_accept != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -5600,7 +5600,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_accept_msg(LIBLTE_MME_ATTACH_ACCEPT_MSG
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -5778,7 +5778,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_complete_msg(LIBLTE_MME_ATTACH_COMPLETE
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (attach_comp != NULL && key_256 != NULL && msg != NULL) {
+  if (attach_comp != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -5808,7 +5808,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_complete_msg(LIBLTE_MME_ATTACH_COMPLETE
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -6572,7 +6572,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_detach_accept_msg(LIBLTE_MME_DETACH_ACCEPT_MSG
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (detach_accept != NULL && key_256 != NULL && msg != NULL) {
+  if (detach_accept != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -6599,7 +6599,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_detach_accept_msg(LIBLTE_MME_DETACH_ACCEPT_MSG
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -6656,7 +6656,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_detach_request_msg(LIBLTE_MME_DETACH_REQUEST_M
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (detach_req != NULL && key_256 != NULL && msg != NULL) {
+  if (detach_req != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -6692,7 +6692,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_detach_request_msg(LIBLTE_MME_DETACH_REQUEST_M
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -6757,7 +6757,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_downlink_nas_transport_msg(LIBLTE_MME_DOWNLINK
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (dl_nas_transport != NULL && key_256 != NULL && msg != NULL) {
+  if (dl_nas_transport != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -6787,7 +6787,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_downlink_nas_transport_msg(LIBLTE_MME_DOWNLINK
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -6909,7 +6909,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_emm_information_msg(LIBLTE_MME_EMM_INFORMATION
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7011,7 +7011,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_emm_status_msg(LIBLTE_MME_EMM_STATUS_MSG_STRUC
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (emm_status != NULL && key_256 != NULL && msg != NULL) {
+  if (emm_status != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7041,7 +7041,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_emm_status_msg(LIBLTE_MME_EMM_STATUS_MSG_STRUC
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7107,7 +7107,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_extended_service_request_msg(LIBLTE_MME_EXTEND
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ext_service_req != NULL && key_256 != NULL && msg != NULL) {
+  if (ext_service_req != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7164,7 +7164,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_extended_service_request_msg(LIBLTE_MME_EXTEND
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7256,7 +7256,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_guti_reallocation_command_msg(LIBLTE_MME_GUTI_
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (guti_realloc_cmd != NULL && key_256 != NULL && msg != NULL) {
+  if (guti_realloc_cmd != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7293,7 +7293,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_guti_reallocation_command_msg(LIBLTE_MME_GUTI_
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7362,7 +7362,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_guti_reallocation_complete_msg(LIBLTE_MME_GUTI
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (guti_realloc_complete != NULL && key_256 != NULL && msg != NULL) {
+  if (guti_realloc_complete != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7389,7 +7389,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_guti_reallocation_complete_msg(LIBLTE_MME_GUTI
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7574,7 +7574,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_mode_command_msg(LIBLTE_MME_SECURITY_
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (sec_mode_cmd != NULL && key_256 != NULL && msg != NULL) {
+  if (sec_mode_cmd != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7633,7 +7633,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_mode_command_msg(LIBLTE_MME_SECURITY_
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7727,7 +7727,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_mode_complete_msg(LIBLTE_MME_SECURITY
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (sec_mode_comp != NULL && key_256 != NULL && msg != NULL) {
+  if (sec_mode_comp != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7761,7 +7761,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_mode_complete_msg(LIBLTE_MME_SECURITY
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -7934,7 +7934,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_service_reject_msg(LIBLTE_MME_SERVICE_REJECT_M
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type && NULL != key_256) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -8069,7 +8069,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_accept_msg(LIBLTE_MME_TRA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_accept != NULL && key_256 != NULL && msg != NULL) {
+  if (ta_update_accept != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8206,7 +8206,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_accept_msg(LIBLTE_MME_TRA
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -8403,7 +8403,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_complete_msg(LIBLTE_MME_T
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_complete != NULL && key_256 != NULL && msg != NULL) {
+  if (ta_update_complete != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8430,7 +8430,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_complete_msg(LIBLTE_MME_T
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -8487,7 +8487,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_reject_msg(LIBLTE_MME_TRA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_rej != NULL && key_256 != NULL && msg != NULL) {
+  if (ta_update_rej != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8524,7 +8524,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_reject_msg(LIBLTE_MME_TRA
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -8593,7 +8593,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_request_msg(LIBLTE_MME_TR
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_req != NULL && key_256 != NULL && msg != NULL) {
+  if (ta_update_req != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8776,7 +8776,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_request_msg(LIBLTE_MME_TR
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -9030,7 +9030,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_nas_transport_msg(LIBLTE_MME_UPLINK_NAS
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ul_nas_transport != NULL && key_256 != NULL && msg != NULL) {
+  if (ul_nas_transport != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9060,7 +9060,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_nas_transport_msg(LIBLTE_MME_UPLINK_NAS
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -9120,7 +9120,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_downlink_generic_nas_transport_msg(LIBLTE_MME_
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (dl_generic_nas_transport != NULL && key_256 != NULL && msg != NULL) {
+  if (dl_generic_nas_transport != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9156,7 +9156,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_downlink_generic_nas_transport_msg(LIBLTE_MME_
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -9222,7 +9222,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_generic_nas_transport_msg(LIBLTE_MME_UP
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ul_generic_nas_transport != NULL && key_256 != NULL && msg != NULL) {
+  if (ul_generic_nas_transport != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9258,7 +9258,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_generic_nas_transport_msg(LIBLTE_MME_UP
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -9324,7 +9324,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_service_request_msg(LIBLTE_MME_C
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (cp_service_req != NULL && key_256 != NULL && msg != NULL) {
+  if (cp_service_req != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9385,7 +9385,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_service_request_msg(LIBLTE_MME_C
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -9482,7 +9482,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_service_accept_msg(LIBLTE_MME_SERVICE_ACCEPT_M
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (service_accept != NULL && key_256 != NULL && msg != NULL) {
+  if (service_accept != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9514,7 +9514,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_service_accept_msg(LIBLTE_MME_SERVICE_ACCEPT_M
 
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Calculate MAC
-      liblte_security_128_eia2(&key_256[16],
+      liblte_security_128_eia2(key_256,
           count,
           0,
           direction,
@@ -11943,7 +11943,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (data_transport_msg != NULL && key_256 != NULL && msg != NULL) {
+ if (data_transport_msg != NULL &&  msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
