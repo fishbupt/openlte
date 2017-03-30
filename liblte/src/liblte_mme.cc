@@ -5417,7 +5417,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_protected_nas_msg(LIBLTE_BYTE_MSG_STR
   uint8* msg_ptr = sec_msg->msg;
   uint32 i;
 
-  if (msg != NULL &&  sec_msg != NULL) {
+  if (msg != NULL && sec_msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -5475,7 +5475,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_accept_msg(LIBLTE_MME_ATTACH_ACCEPT_MSG
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (attach_accept != NULL &&  msg != NULL) {
+  if (attach_accept != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -5778,7 +5778,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_complete_msg(LIBLTE_MME_ATTACH_COMPLETE
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (attach_comp != NULL &&  msg != NULL) {
+  if (attach_comp != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -6572,7 +6572,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_detach_accept_msg(LIBLTE_MME_DETACH_ACCEPT_MSG
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (detach_accept != NULL &&  msg != NULL) {
+  if (detach_accept != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -6656,7 +6656,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_detach_request_msg(LIBLTE_MME_DETACH_REQUEST_M
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (detach_req != NULL &&  msg != NULL) {
+  if (detach_req != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -6757,7 +6757,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_downlink_nas_transport_msg(LIBLTE_MME_DOWNLINK
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (dl_nas_transport != NULL &&  msg != NULL) {
+  if (dl_nas_transport != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7011,7 +7011,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_emm_status_msg(LIBLTE_MME_EMM_STATUS_MSG_STRUC
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (emm_status != NULL &&  msg != NULL) {
+  if (emm_status != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7107,7 +7107,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_extended_service_request_msg(LIBLTE_MME_EXTEND
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ext_service_req != NULL &&  msg != NULL) {
+  if (ext_service_req != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7256,7 +7256,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_guti_reallocation_command_msg(LIBLTE_MME_GUTI_
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (guti_realloc_cmd != NULL &&  msg != NULL) {
+  if (guti_realloc_cmd != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7362,7 +7362,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_guti_reallocation_complete_msg(LIBLTE_MME_GUTI
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (guti_realloc_complete != NULL &&  msg != NULL) {
+  if (guti_realloc_complete != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7574,7 +7574,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_mode_command_msg(LIBLTE_MME_SECURITY_
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (sec_mode_cmd != NULL &&  msg != NULL) {
+  if (sec_mode_cmd != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -7727,7 +7727,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_mode_complete_msg(LIBLTE_MME_SECURITY
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (sec_mode_comp != NULL &&  msg != NULL) {
+  if (sec_mode_comp != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8069,7 +8069,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_accept_msg(LIBLTE_MME_TRA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_accept != NULL &&  msg != NULL) {
+  if (ta_update_accept != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8403,7 +8403,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_complete_msg(LIBLTE_MME_T
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_complete != NULL &&  msg != NULL) {
+  if (ta_update_complete != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8487,7 +8487,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_reject_msg(LIBLTE_MME_TRA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_rej != NULL &&  msg != NULL) {
+  if (ta_update_rej != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -8593,7 +8593,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_tracking_area_update_request_msg(LIBLTE_MME_TR
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ta_update_req != NULL &&  msg != NULL) {
+  if (ta_update_req != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9030,7 +9030,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_nas_transport_msg(LIBLTE_MME_UPLINK_NAS
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ul_nas_transport != NULL &&  msg != NULL) {
+  if (ul_nas_transport != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9120,7 +9120,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_downlink_generic_nas_transport_msg(LIBLTE_MME_
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (dl_generic_nas_transport != NULL &&  msg != NULL) {
+  if (dl_generic_nas_transport != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9222,7 +9222,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_uplink_generic_nas_transport_msg(LIBLTE_MME_UP
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (ul_generic_nas_transport != NULL &&  msg != NULL) {
+  if (ul_generic_nas_transport != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9324,7 +9324,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_control_plane_service_request_msg(LIBLTE_MME_C
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (cp_service_req != NULL &&  msg != NULL) {
+  if (cp_service_req != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9482,7 +9482,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_service_accept_msg(LIBLTE_MME_SERVICE_ACCEPT_M
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
-  if (service_accept != NULL &&  msg != NULL) {
+  if (service_accept != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -9588,7 +9588,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_activate_dedicated_eps_bearer_context_accept_m
     msg_ptr++;
 
     // Message Type
-    *msg_ptr = LIBLTE_MME_MSG_TYPE_ESM_DATA_TRANSPORT;
+    *msg_ptr = LIBLTE_MME_MSG_TYPE_ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT;
     msg_ptr++;
 
     // Protocol Configuration Options
@@ -11943,7 +11943,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRA
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   uint8* msg_ptr = msg->msg;
 
- if (data_transport_msg != NULL &&  msg != NULL) {
+  if (data_transport_msg != NULL && msg != NULL) {
     if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
       // Protocol Discriminator and Security Header Type
       *msg_ptr = (sec_hdr_type << 4) | (LIBLTE_MME_PD_EPS_MOBILITY_MANAGEMENT);
@@ -11995,7 +11995,7 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUC
   if (msg != NULL && data_transport_msg != NULL) {
     // Security Header Type
     sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
-    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == sec_hdr_type) {
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_INTEGRITY_AND_CIPHERED != sec_hdr_type) {
     } else {
       msg_ptr += 6;
     }
@@ -12008,6 +12008,7 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUC
     msg_ptr++;
 
     // Skip Message Type
+    printf("0x%x:0x%x", *msg_ptr, LIBLTE_MME_MSG_TYPE_ESM_DATA_TRANSPORT);
     msg_ptr++;
 
     // User Data Container
