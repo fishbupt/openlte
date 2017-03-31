@@ -12008,7 +12008,6 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_esm_data_transport_msg(LIBLTE_BYTE_MSG_STRUC
     msg_ptr++;
 
     // Skip Message Type
-    printf("0x%x:0x%x", *msg_ptr, LIBLTE_MME_MSG_TYPE_ESM_DATA_TRANSPORT);
     msg_ptr++;
 
     // User Data Container
