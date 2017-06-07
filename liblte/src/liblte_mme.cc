@@ -11981,6 +11981,16 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_esm_data_transport_msg(LIBLTE_MME_ESM_DATA_TRA
     // Fill in the number of bytes used
     msg->N_bytes = msg_ptr - msg->msg;
 
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS != sec_hdr_type) {
+      // Calculate MAC
+      liblte_security_128_eia2(key_256,
+          count,
+          0,
+          direction,
+          &msg->msg[5],
+          msg->N_bytes - 5,
+          &msg->msg[1]);
+    }
     err = LIBLTE_SUCCESS;
   }
   return err;
