@@ -2267,6 +2267,7 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_pdn_address_ie(uint8** ie_ptr,
 #define LIBLTE_MME_PDN_TYPE_IPV6 0x2
 #define LIBLTE_MME_PDN_TYPE_IPV4V6 0x3
 #define LIBLTE_MME_PDN_TYPE_UNUSED 0x4
+#define LIBLTE_MME_PDN_TYPE_NONIP 0x5
 // Enums
 // Structs
 // Functions
@@ -2850,6 +2851,9 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_release_asssistance_indication_ie(uint8** ie
 // Functions
 LIBLTE_ERROR_ENUM liblte_mme_parse_msg_header(LIBLTE_BYTE_MSG_STRUCT* msg,
     uint8* pd,
+    uint8* sec_hdr_type,
+    uint8* mac,
+    uint8* seq_num,
     uint8* msg_type);
 LIBLTE_ERROR_ENUM liblte_mme_pack_security_protected_nas_msg(LIBLTE_BYTE_MSG_STRUCT* msg,
     uint8 sec_hdr_type,

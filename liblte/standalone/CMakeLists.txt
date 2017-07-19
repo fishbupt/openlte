@@ -3,6 +3,8 @@ project(openLTE CXX C)
 set(openLTE_version 0.20.3)
 enable_testing()
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #select the release build type by default to get optimization flags
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
@@ -32,6 +34,7 @@ add_library(lte
   ../src/liblte_rrc.cc
   ../src/liblte_mme.cc
   ../src/liblte_security.cc
+  ../src/liblte_describe.cc
 )
 
 # install

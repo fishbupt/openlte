@@ -3496,9 +3496,9 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_ue_network_capability_ie(uint8** ie_ptr,
       ue_network_cap->s1_u = (**ie_ptr >> 4) & 0x01;
       ue_network_cap->erwo_pdn = (**ie_ptr >> 5) & 0x01;
       ue_network_cap->hc_cp_ciot = (**ie_ptr >> 6) & 0x01;
-      ie_ptr += 1;
+      *ie_ptr += 1;
       ue_network_cap->multiple_drb = (**ie_ptr) & 0x01;
-      ie_ptr += 1;
+      *ie_ptr += 1;
     } else {
       ue_network_cap->ciot_present = false;
       ue_network_cap->cp_ciot = false;
@@ -5366,31 +5366,35 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_release_asssistance_indication_ie(uint8** ie
 *********************************************************************/
 LIBLTE_ERROR_ENUM liblte_mme_parse_msg_header(LIBLTE_BYTE_MSG_STRUCT* msg,
     uint8* pd,
+    uint8* sec_hdr_type,
+    uint8* mac,
+    uint8* seq_num,
     uint8* msg_type)
 {
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
-  uint8 sec_hdr_type;
 
   if (msg != NULL && pd != NULL && msg_type != NULL) {
     // Security Header Type
-    sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
+    *sec_hdr_type = (msg->msg[0] & 0xF0) >> 4;
 
     // Protocol Discriminator
     *pd = msg->msg[0] & 0x0F;
 
-    if (LIBLTE_MME_SECURITY_HDR_TYPE_SERVICE_REQUEST == sec_hdr_type) {
+    if (LIBLTE_MME_SECURITY_HDR_TYPE_SERVICE_REQUEST == *sec_hdr_type) {
       *msg_type = LIBLTE_MME_SECURITY_HDR_TYPE_SERVICE_REQUEST;
     } else {
       if (LIBLTE_MME_PD_EPS_SESSION_MANAGEMENT == *pd) {
         // Message Type
         *msg_type = msg->msg[2];
       } else {
-        if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == sec_hdr_type) {
+        if (LIBLTE_MME_SECURITY_HDR_TYPE_PLAIN_NAS == *sec_hdr_type) {
           // Message Type
           *msg_type = msg->msg[1];
         } else {
           // Protocol Discriminator
           *pd = msg->msg[6] & 0x0F;
+          memcpy(mac, &msg->msg[1], 4);
+          *seq_num = msg->msg[5];
 
           if (LIBLTE_MME_PD_EPS_SESSION_MANAGEMENT == *pd) {
             *msg_type = msg->msg[8];
