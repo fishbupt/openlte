@@ -193,7 +193,7 @@ void set_imeisv(const uint8 *imeisv, std::ostream &ostream,
                 const std::string &indent);
 
 void set_tmgi(const LIBLTE_MME_MOBILE_ID_TMGI_STRUCT &tmgi,
-              std::ostream &ostream,const std::string &indent);
+              std::ostream &ostream, const std::string &indent);
 // EPS mobile identity
 void set_eps_mobile_id(const LIBLTE_MME_EPS_MOBILE_ID_STRUCT &eps_mobile_id,
                        std::ostream &ostream, const std::string &indent);
@@ -310,4 +310,63 @@ void set_mobile_id(const LIBLTE_MME_MOBILE_ID_STRUCT &mobile_id,
 void set_security_mode_complete(
     const LIBLTE_MME_SECURITY_MODE_COMPLETE_MSG_STRUCT &sec_mode_comp,
     std::ostream &ostream, const std::string &indent);
+
+const static std::map<int, std::string> eps_attach_result_strings = {
+    {1, "EPS only"}, {2, "combined EPS/IMSI attach"}};
+
+void set_attach_result(uint8 eps_attach_result, std::ostream &ostream,
+                       const std::string indent);
+
+const static std::map<int, std::string> gprs_timer_unit_strings = {
+    {LIBLTE_MME_GPRS_TIMER_UNIT_2_SECONDS, "2 seconds"},
+    {LIBLTE_MME_GPRS_TIMER_UNIT_1_MINUTE, "1 minute"},
+    {LIBLTE_MME_GPRS_TIMER_UNIT_6_MINUTES, "6 minutes"},
+    {LIBLTE_MME_GPRS_TIMER_DEACTIVATED, "Deactivated"}};
+
+void set_gprs_timer(const LIBLTE_MME_GPRS_TIMER_STRUCT &gprs_timer,
+                    const std::string timer_name, std::ostream &ostream,
+                    const std::string &indent);
+
+const static std::map<int, std::string> gprs_timer_3_unit_strings = {
+
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_10_MINUTES, "10 minutes"},
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_1_HOUR, "1 hour"},
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_10_HOURS, "10 hours"},
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_2_SECONDS, "2 seconds"},
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_30_SECONDS, "30 seconds"},
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_1_MINUTE, "10 minutes"},
+    {LIBLTE_MME_GPRS_TIMER_3_UNIT_320_HOURS, "320 hours"},
+    {LIBLTE_MME_GPRS_TIMER_3_DEACTIVATED, "Deactivated"}};
+void set_gprs_timer_3(const LIBLTE_MME_GPRS_TIMER_3_STRUCT &gprs_timer,
+                      const std::string timer_name, std::ostream &ostream,
+                      const std::string &indent);
+
+void set_tracking_area_id(const LIBLTE_MME_TRACKING_AREA_ID_STRUCT &tai,
+                          std::ostream &ostream, const std::string &indent);
+void set_tracking_area_id_list(
+    const LIBLTE_MME_TRACKING_AREA_IDENTITY_LIST_STRUCT &tai_list,
+    std::ostream &ostream, const std::string indent);
+
+void set_location_area_id(const LIBLTE_MME_LOCATION_AREA_ID_STRUCT &lai,
+                          std::ostream &ostream, const std::string &indent);
+
+void set_plmn_list(const LIBLTE_MME_PLMN_LIST_STRUCT &plmn_list,
+                   const std::string plmn_name, std::ostream &ostream,
+                   const std::string indent);
+
+void set_emergency_number(const LIBLTE_MME_EMERGENCY_NUMBER_STRUCT &emerg_num,
+                          std::ostream &ostream, const std::string &indent);
+void set_emergency_number_list(
+    const LIBLTE_MME_EMERGENCY_NUMBER_LIST_STRUCT &emerg_num_list,
+    std::ostream &ostream, std::string indent);
+
+void set_eps_network_feature_support(const LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT &eps_nfs,
+    std::ostream &ostream, const std::string indent);
+
+void set_additional_update_result(LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM update_result,
+    std::ostream &ostream, const std::string &indent);
+
+void set_extended_drx(const LIBLTE_MME_EXTENDED_DRX_STRUCT &eDrx, 
+    std::ostream &ostream, const std::string &indent);
+
 #endif  // __LIBLTE_DESC__

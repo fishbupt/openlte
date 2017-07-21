@@ -34,12 +34,71 @@ std::string liblte_mme_msg_to_string(LIBLTE_BYTE_MSG_STRUCT &mme_msg) {
       set_esm_message_container(&attach_req.esm_msg, ostream, indent_str);
       break;
     }
-    case LIBLTE_MME_MSG_TYPE_ATTACH_ACCEPT:
+    case LIBLTE_MME_MSG_TYPE_ATTACH_ACCEPT: {
+      LIBLTE_MME_ATTACH_ACCEPT_MSG_STRUCT attach_accept{};
+      liblte_mme_unpack_attach_accept_msg(&mme_msg, &attach_accept);
+      set_attach_result(attach_accept.eps_attach_result, ostream, indent_str);
+      set_gprs_timer(attach_accept.t3412, "T3412", ostream, indent_str);
+      set_tracking_area_id_list(attach_accept.tai_list, ostream, indent_str);
+      set_esm_message_container(&attach_accept.esm_msg, ostream, indent_str);
+      if (attach_accept.guti_present) {
+        set_eps_mobile_id(attach_accept.guti, ostream, indent_str);
+      }
+      if (attach_accept.lai_present) {
+        set_location_area_id(attach_accept.lai, ostream, indent_str);
+      }
+      if (attach_accept.ms_id_present) {
+        set_mobile_id(attach_accept.ms_id, ostream, indent_str);
+      }
+      if (attach_accept.emm_cause_present) {
+        set_emm_cause(attach_accept.emm_cause, ostream, indent_str);
+      }
+      if (attach_accept.t3402_present) {
+        set_gprs_timer(attach_accept.t3402, "T3402", ostream, indent_str);
+      }
+      if (attach_accept.t3423_present) {
+        set_gprs_timer(attach_accept.t3423, "T3423", ostream, indent_str);
+      }
+      if (attach_accept.equivalent_plmns_present) {
+        set_plmn_list(attach_accept.equivalent_plmns, "Equivalent PLMNs",
+                      ostream, indent_str);
+      }
+      if (attach_accept.emerg_num_list_present) {
+        set_emergency_number_list(attach_accept.emerg_num_list, ostream,
+                                  indent_str);
+      }
+      if (attach_accept.eps_network_feature_support_present) {
+        set_eps_network_feature_support(
+            attach_accept.eps_network_feature_support, ostream, indent_str);
+      }
+      if (attach_accept.additional_update_result_present) {
+        set_additional_update_result(attach_accept.additional_update_result,
+                                     ostream, indent_str);
+      }
+      if (attach_accept.t3412_ext_present) {
+        set_gprs_timer_3(attach_accept.t3412_ext, "T3412 extended", ostream,
+                         indent_str);
+      }
+      if (attach_accept.eDrx_param_present) {
+        set_extended_drx(attach_accept.eDrx_param, ostream, indent_str);
+      }
       break;
-    case LIBLTE_MME_MSG_TYPE_ATTACH_COMPLETE:
+    }
+    case LIBLTE_MME_MSG_TYPE_ATTACH_COMPLETE: {
+      LIBLTE_MME_ATTACH_COMPLETE_MSG_STRUCT attach_comp{};
+      liblte_mme_unpack_attach_complete_msg(&mme_msg, &attach_comp);
+      set_esm_message_container(&attach_comp.esm_msg, ostream, indent_str);
       break;
-    case LIBLTE_MME_MSG_TYPE_ATTACH_REJECT:
+    }
+    case LIBLTE_MME_MSG_TYPE_ATTACH_REJECT: {
+      LIBLTE_MME_ATTACH_REJECT_MSG_STRUCT attach_rej{};
+      liblte_mme_unpack_attach_reject_msg(&mme_msg, &attach_rej);
+      set_emm_cause(attach_rej.emm_cause, ostream, indent_str);
+      if (attach_rej.esm_msg_present) {
+        set_esm_message_container(&attach_rej.esm_msg, ostream, indent_str);
+      }
       break;
+    }
     case LIBLTE_MME_MSG_TYPE_DETACH_REQUEST:
       break;
     case LIBLTE_MME_MSG_TYPE_DETACH_ACCEPT:
@@ -609,4 +668,141 @@ void set_security_mode_complete(
     std::string indent_str = indent + std::string(indent_size, ' ');
     set_mobile_id(sec_mode_comp.imeisv, ostream, indent_str);
   }
+}
+
+void set_attach_result(uint8 eps_attach_result, std::ostream &ostream,
+                       const std::string indent) {
+  std::string desc;
+  auto it = eps_attach_result_strings.find(eps_attach_result);
+  if (it == eps_attach_result_strings.end()) {
+    desc = "Unknown EPS Attach result";
+  } else {
+    desc = eps_attach_result_strings.at(eps_attach_result);
+  }
+  ostream << indent << "EPS Attach result = " << +eps_attach_result << "( "
+          << desc << ")" << std::endl;
+}
+void set_gprs_timer(const LIBLTE_MME_GPRS_TIMER_STRUCT &gprs_timer,
+                    const std::string timer_name, std::ostream &ostream,
+                    const std::string &indent) {
+  ostream << indent << timer_name << ":" << std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  std::string desc;
+  auto it = gprs_timer_unit_strings.find(gprs_timer.unit);
+  if (it == gprs_timer_unit_strings.end()) {
+    desc = "Unknown Timer Unit";
+  } else {
+    desc = gprs_timer_unit_strings.at(gprs_timer.unit);
+  }
+  ostream << indent_str << "value = " << +gprs_timer.value << std::endl;
+  ostream << indent_str << "unit = " << +gprs_timer.unit << " (" << desc << ")"
+          << std::endl;
+}
+void set_gprs_timer_3(const LIBLTE_MME_GPRS_TIMER_3_STRUCT &gprs_timer,
+                      const std::string timer_name, std::ostream &ostream,
+                      const std::string &indent) {
+  ostream << indent << timer_name << ":" << std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  std::string desc;
+  auto it = gprs_timer_3_unit_strings.find(gprs_timer.unit);
+  if (it == gprs_timer_3_unit_strings.end()) {
+    desc = "Unknown Timer Unit";
+  } else {
+    desc = gprs_timer_3_unit_strings.at(gprs_timer.unit);
+  }
+  ostream << indent_str << "value = " << +gprs_timer.value << std::endl;
+  ostream << indent_str << "unit = " << +gprs_timer.unit << " (" << desc << ")"
+          << std::endl;
+}
+
+void set_tracking_area_id(const LIBLTE_MME_TRACKING_AREA_ID_STRUCT &tai,
+                          std::ostream &ostream, const std::string &indent) {
+  ostream << indent << "MCC = " << tai.mcc << std::endl;
+  ostream << indent << "MNC = " << tai.mnc << std::endl;
+  ostream << indent << "TAC = " << tai.tac << std::endl;
+}
+
+void set_tracking_area_id_list(
+    const LIBLTE_MME_TRACKING_AREA_IDENTITY_LIST_STRUCT &tai_list,
+    std::ostream &ostream, const std::string indent) {
+  ostream << indent << "TAI list: " << std::endl;
+  auto indent_str = indent + std::string(indent_size, ' ');
+  for (int i = 0; i < tai_list.N_tais; i++) {
+    set_tracking_area_id(tai_list.tai[i], ostream, indent_str);
+  }
+}
+
+void set_location_area_id(const LIBLTE_MME_LOCATION_AREA_ID_STRUCT &lai,
+                          std::ostream &ostream, const std::string &indent) {
+  ostream << indent << "MCC = " << lai.mcc << std::endl;
+  ostream << indent << "MNC = " << lai.mnc << std::endl;
+  ostream << indent << "LAC = " << lai.lac << std::endl;
+}
+
+void set_plmn_list(const LIBLTE_MME_PLMN_LIST_STRUCT &plmn_list,
+                   const std::string plmn_name, std::ostream &ostream,
+                   const std::string indent) {
+  ostream << indent << plmn_name << ":" << std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+
+  for (int i = 0; i < plmn_list.N_plmns; i++) {
+    ostream << indent_str << "MCC = " << plmn_list.mcc[i] << std::endl;
+    ostream << indent_str << "MNC = " << plmn_list.mnc[i] << std::endl;
+  }
+}
+void set_emergency_number(const LIBLTE_MME_EMERGENCY_NUMBER_STRUCT &emerg_num,
+                          std::ostream &ostream, const std::string &indent) {
+  ostream
+      << indent << "Emergency Serice Category = " << emerg_num.emerg_service_cat
+      << " ("
+      << liblte_mme_emergency_service_category_text[emerg_num.emerg_service_cat]
+      << ")" << std::endl;
+  ostream << indent << "Number = ";
+  for (int i = 0; i < emerg_num.N_emerg_num_digits; i++) {
+    ostream << +emerg_num.emerg_num[i];
+  }
+  ostream << std::endl;
+}
+void set_emergency_number_list(
+    const LIBLTE_MME_EMERGENCY_NUMBER_LIST_STRUCT &emerg_num_list,
+    std::ostream &ostream, std::string indent) {
+  ostream << indent << "Emergency Number List:" << std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  for (int i = 0; i < emerg_num_list.N_emerg_nums; i++) {
+    set_emergency_number(emerg_num_list.emerg_num[i], ostream, indent_str);
+  }
+}
+
+void set_eps_network_feature_support(
+    const LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT &eps_nfs,
+    std::ostream &ostream, const std::string indent) {
+  ostream << "EPS network feature support:" << std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  ostream << indent_str << "CP CIoT = " << eps_nfs.cp_ciot << std::endl;
+  ostream << indent_str << "ERw/o PDN = " << eps_nfs.erwo_pdn << std::endl;
+  ostream << indent_str << "ESR PS = " << eps_nfs.esrps << std::endl;
+  ostream << indent_str << "CS-LCS = " << eps_nfs.cs_lcs << std::endl;
+  ostream << indent_str << "EPC-LCS = " << eps_nfs.epc_lcs << std::endl;
+  ostream << indent_str << "EMC BS = " << eps_nfs.emc_bs << std::endl;
+  ostream << indent_str << "IMS VoPS = " << eps_nfs.ims_vops << std::endl;
+  ostream << indent_str << "HC-CP CIoT = " << eps_nfs.hc_cp_ciot << std::endl;
+  ostream << indent_str << "S1-U data = " << eps_nfs.s1_u << std::endl;
+  ostream << indent_str << "UP CIoT = " << eps_nfs.up_ciot << std::endl;
+}
+
+void set_additional_update_result(
+    LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM update_result,
+    std::ostream &ostream, const std::string &indent) {
+  ostream << indent << "Additional update result = " << update_result << " ("
+          << liblte_mme_additional_update_result_text[update_result] << ")"
+          << std::endl;
+}
+
+void set_extended_drx(const LIBLTE_MME_EXTENDED_DRX_STRUCT &eDrx,
+                      std::ostream &ostream, const std::string &indent) {
+  ostream << "Extended DRX Parameter: " << std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  ostream << indent_str << "Paging Time Window = " << eDrx.paging_time_window
+          << std::endl;
+  ostream << indent_str << "eDRX value = " << eDrx.eDRX_value << std::endl;
 }
