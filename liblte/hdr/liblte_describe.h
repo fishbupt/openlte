@@ -215,6 +215,9 @@ static const std::map<int, std::string> pdn_type_strings = {
     {LIBLTE_MME_PDN_TYPE_UNUSED, "unused"},
     {LIBLTE_MME_PDN_TYPE_NONIP, "non IP"}};
 
+void set_pdn_type(uint8 pdn_type, std::ostream &ostream,
+                  const std::string &indent);
+
 void set_pdn_connectivity_request(
     const LIBLTE_MME_PDN_CONNECTIVITY_REQUEST_MSG_STRUCT &pdn_con_req,
     std::ostream &ostream, const std::string &indent);
@@ -276,6 +279,85 @@ static const std::map<int, std::string> emm_cause_strings = {
     {LIBLTE_MME_EMM_CAUSE_PROTOCOL_ERROR_UNSPECIFIED,
      "Protocol error, unspecified"}};
 void set_emm_cause(uint8 emm_cause, std::ostream &ostream,
+                   const std::string &indent);
+
+static const std::map<int, std::string> esm_cause_strings = {
+    {LIBLTE_MME_ESM_CAUSE_OPERATOR_DETERMINED_BARRING,
+     "Operator Determined Barring"},
+    {LIBLTE_MME_ESM_CAUSE_INSUFFICIENT_RESOURCES, "Insufficient resource"},
+    {LIBLTE_MME_ESM_CAUSE_UNKNOWN_OR_MISSING_APN, "Missing or Unknown APN"},
+    {LIBLTE_MME_ESM_CAUSE_UNKNOWN_PDN_TYPE, "Unknown PDN type"},
+    {LIBLTE_MME_ESM_CAUSE_USER_AUTHENTICATION_FAILED,
+     "User authentication failed"},
+    {LIBLTE_MME_ESM_CAUSE_REQUEST_REJECTED_BY_SERVING_OR_PDN_GW,
+     "Request rejected by Serving GW or PDN GW"},
+    {LIBLTE_MME_ESM_CAUSE_REQUEST_REJECTED_UNSPECIFIED,
+     "Request rejected, unspecified"},
+    {LIBLTE_MME_ESM_CAUSE_SERVICE_OPTION_NOT_SUPPORTED,
+     "Service option not surpported"},
+    {LIBLTE_MME_ESM_CAUSE_REQUESTED_SERVICE_OPTION_NOT_SUBSCRIBED,
+     "Requested service option not subscribed"},
+    {LIBLTE_MME_ESM_CAUSE_SERVICE_OPTION_TEMPORARILY_OUT_OF_ORDER,
+     "Service option temporarily out of order"},
+    {LIBLTE_MME_ESM_CAUSE_PTI_ALREADY_IN_USE, "PTI already in use"},
+    {LIBLTE_MME_ESM_CAUSE_REGULAR_DEACTIVATION, "Regular deactivation"},
+    {LIBLTE_MME_ESM_CAUSE_EPS_QOS_NOT_ACCEPTED, "EPS QoS not accepted"},
+    {LIBLTE_MME_ESM_CAUSE_NETWORK_FAILURE, "Network failure"},
+    {LIBLTE_MME_ESM_CAUSE_REACTIVATION_REQUESTED, "Reactivation requested"},
+    {LIBLTE_MME_ESM_CAUSE_SEMANTIC_ERROR_IN_THE_TFT_OPERATION,
+     "Semantic error in the TFT operation"},
+    {LIBLTE_MME_ESM_CAUSE_SYNTACTICAL_ERROR_IN_THE_TFT_OPERATION,
+     "Syntactical error in the TFT operation"},
+    {LIBLTE_MME_ESM_CAUSE_INVALID_EPS_BEARER_IDENTITY,
+     "Invalid EPS bearer identity"},
+    {LIBLTE_MME_ESM_CAUSE_SEMANTIC_ERRORS_IN_PACKET_FILTERS,
+     "Semantic errors in packet filter(s)"},
+    {LIBLTE_MME_ESM_CAUSE_SYNTACTICAL_ERRORS_IN_PACKET_FILTERS,
+     "Syntactical errors in packet filter(s)"},
+    {LIBLTE_MME_ESM_CAUSE_UNUSED, "Unused"},
+    {LIBLTE_MME_ESM_CAUSE_PTI_MISMATCH, "PTI mismatch"},
+    {LIBLTE_MME_ESM_CAUSE_LAST_PDN_DISCONNECTION_NOT_ALLOWED,
+     "Lst PDN disconnection not allowed"},
+    {LIBLTE_MME_ESM_CAUSE_PDN_TYPE_IPV4_ONLY_ALLOWED,
+     "PDN type IPv4 only allowed"},
+    {LIBLTE_MME_ESM_CAUSE_PDN_TYPE_IPV6_ONLY_ALLOWED,
+     "PDN type IPv6 only allowed"},
+    {LIBLTE_MME_ESM_CAUSE_SINGLE_ADDRESS_BEARERS_ONLY_ALLOWED,
+     "Single address bearers only allowed"},
+    {LIBLTE_MME_ESM_CAUSE_ESM_INFORMATION_NOT_RECEIVED,
+     "ESM information not received"},
+    {LIBLTE_MME_ESM_CAUSE_PDN_CONNECTION_DOES_NOT_EXIST,
+     "PDN connection does not exist"},
+    {LIBLTE_MME_ESM_CAUSE_MULTIPLE_PDN_CONNECTIONS_FOR_A_GIVEN_APN_NOT_ALLOWED,
+     "Multiple PDN connections for a given APN not allowed"},
+    {LIBLTE_MME_ESM_CAUSE_COLLISION_WITH_NETWORK_INITIATED_REQUEST,
+     "Collision with network initiated request"},
+    {LIBLTE_MME_ESM_CAUSE_UNSUPPORTED_QCI_VALUE, "Unspported QCI value"},
+    {LIBLTE_MME_ESM_CAUSE_BEARER_HANDLING_NOT_SUPPORTED,
+     "Bearer handling not supported"},
+    {LIBLTE_MME_ESM_CAUSE_MAXIMUM_EPS_BEARERS_REACHED,
+     "Maximum number of EPS bearers reached"},
+    {LIBLTE_MME_ESM_CAUSE_REQUESTED_APN_NOT_SUPPORTED,
+     "Requested APN not supported in current RAT and PLMN combination"},
+    {LIBLTE_MME_ESM_CAUSE_INVALID_PTI_VALUE, "Invalid PTI value"},
+    {LIBLTE_MME_ESM_CAUSE_SEMANTICALLY_INCORRECT_MESSAGE,
+     "Semantically incorrect message"},
+    {LIBLTE_MME_ESM_CAUSE_INVALID_MANDATORY_INFORMATION,
+     "Invalid mandatory information"},
+    {LIBLTE_MME_ESM_CAUSE_MESSAGE_TYPE_NON_EXISTENT_OR_NOT_IMPLEMENTED,
+     "Message type non-existent or not implemented"},
+    {LIBLTE_MME_ESM_CAUSE_MESSAGE_TYPE_NOT_COMPATIBLE_WITH_THE_PROTOCOL_STATE,
+     "message type not compatible with the protocol state"},
+    {LIBLTE_MME_ESM_CAUSE_INFORMATION_ELEMENT_NON_EXISTENT_OR_NOT_IMPLEMENTED,
+     "information element not-existent or not implemented"},
+    {LIBLTE_MME_ESM_CAUSE_CONDITIONAL_IE_ERROR, "Conditional IE error"},
+    {LIBLTE_MME_ESM_CAUSE_MESSAGE_NOT_COMPATIBLE_WITH_THE_PROTOCOL_STATE,
+     "message not compatible with the protocol stat"},
+    {LIBLTE_MME_ESM_CAUSE_PROTOCOL_ERROR_UNSPECIFIED,
+     "Protocol error, unspecified"},
+    {LIBLTE_MME_ESM_CAUSE_APN_RESTRICTION_VALUE_INCOMPATIBLE_WITH_ACTIVE_EPS_BEARER_CONTEXT,
+     "APN restriction value incompatible with active EPS bearer context"}};
+void set_esm_cause(uint8 esm_cause, std::ostream &ostream,
                    const std::string &indent);
 
 std::string set_hex_data(const uint8 *data, int size);
@@ -341,6 +423,9 @@ void set_gprs_timer_3(const LIBLTE_MME_GPRS_TIMER_3_STRUCT &gprs_timer,
                       const std::string timer_name, std::ostream &ostream,
                       const std::string &indent);
 
+void set_gprs_timer_2(uint8 value, const std::string timer_name,
+                      std::ostream &stream, const std::string &indent);
+
 void set_tracking_area_id(const LIBLTE_MME_TRACKING_AREA_ID_STRUCT &tai,
                           std::ostream &ostream, const std::string &indent);
 void set_tracking_area_id_list(
@@ -360,13 +445,30 @@ void set_emergency_number_list(
     const LIBLTE_MME_EMERGENCY_NUMBER_LIST_STRUCT &emerg_num_list,
     std::ostream &ostream, std::string indent);
 
-void set_eps_network_feature_support(const LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT &eps_nfs,
+void set_eps_network_feature_support(
+    const LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT &eps_nfs,
     std::ostream &ostream, const std::string indent);
 
-void set_additional_update_result(LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM update_result,
+void set_additional_update_result(
+    LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM update_result,
     std::ostream &ostream, const std::string &indent);
 
-void set_extended_drx(const LIBLTE_MME_EXTENDED_DRX_STRUCT &eDrx, 
+void set_extended_drx(const LIBLTE_MME_EXTENDED_DRX_STRUCT &eDrx,
+                      std::ostream &ostream, const std::string &indent);
+
+void set_eps_qos(const LIBLTE_MME_EPS_QUALITY_OF_SERVICE_STRUCT &eps_qos,
+                 std::ostream &ostream, const std::string indent);
+
+void set_pdn_address(const LIBLTE_MME_PDN_ADDRESS_STRUCT &pdn_addr,
+                     std::ostream &ostream, const std::string indent);
+
+void set_header_compression_configuration(
+    const LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT
+        &header_compress_cfg,
+    std::ostream &ostream, const std::string &indent);
+
+void set_control_plane_only_indication(
+    const LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM &cpoi,
     std::ostream &ostream, const std::string &indent);
 
 #endif  // __LIBLTE_DESC__

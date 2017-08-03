@@ -4109,8 +4109,8 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_extended_drx_ie(uint8** ie_ptr,
 {
   LIBLTE_ERROR_ENUM err = LIBLTE_ERROR_INVALID_INPUTS;
   if (eDrx != NULL && ie_ptr != NULL) {
-    eDrx->eDRX_value = (*ie_ptr)[1] & 0xFF;
-    eDrx->paging_time_window = ((*ie_ptr)[1] >> 4) & 0xFF;
+    eDrx->eDRX_value = (*ie_ptr)[1] & 0x0F;
+    eDrx->paging_time_window = ((*ie_ptr)[1] >> 4) & 0x0F;
 
     *ie_ptr += (*ie_ptr)[0];
     err = LIBLTE_SUCCESS;
@@ -5592,6 +5592,12 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_accept_msg(LIBLTE_MME_ATTACH_ACCEPT_MSG
       liblte_mme_pack_gprs_timer_3_ie(&attach_accept->t3412_ext, &msg_ptr);
     }
 
+    // T3324 Value
+    if (attach_accept->t3324_present) {
+      *msg_ptr = LIBLTE_MME_T3324_VALUE_IEI;
+      msg_ptr++;
+      liblte_mme_pack_gprs_timer_2_ie(attach_accept->t3324, &msg_ptr);
+    }
     // Extended DRX Parameter
     if (attach_accept->eDrx_param_present) {
       *msg_ptr = LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI;
@@ -5747,6 +5753,15 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_attach_accept_msg(LIBLTE_BYTE_MSG_STRUCT* ms
       attach_accept->t3412_ext_present = true;
     } else {
       attach_accept->t3412_ext_present = false;
+    }
+
+    // T3324 Value
+    if(LIBLTE_MME_T3324_VALUE_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_gprs_timer_2_ie(&msg_ptr, &attach_accept->t3324);
+      attach_accept->t3324_present = true;
+    } else {
+      attach_accept->t3324_present = false;
     }
 
     // Extended DRX Parameter
@@ -6007,6 +6022,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_request_msg(LIBLTE_MME_ATTACH_REQUEST_M
       liblte_mme_pack_tracking_area_id_ie(&attach_req->last_visited_registered_tai, &msg_ptr);
     }
 
+
     // DRX Parameter
     if (attach_req->drx_param_present) {
       *msg_ptr = LIBLTE_MME_DRX_PARAMETER_IEI;
@@ -6084,6 +6100,20 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_attach_request_msg(LIBLTE_MME_ATTACH_REQUEST_M
       msg_ptr++;
     }
 
+    // T3324 Value
+    if (attach_req->t3324_present) {
+      *msg_ptr = LIBLTE_MME_T3324_VALUE_IEI;
+      msg_ptr++;
+      liblte_mme_pack_gprs_timer_2_ie(attach_req->t3324, &msg_ptr);
+    }
+
+    // T3412 Ext Value
+    if (attach_req->t3412_ext_present) {
+      *msg_ptr = LIBLTE_MME_T3412_EXTENDED_VALUE_IEI;
+      msg_ptr++;
+      liblte_mme_pack_gprs_timer_3_ie(&attach_req->t3412_ext, &msg_ptr);
+    }
+    
     // Extended DRX Parameter
     if (attach_req->eDrx_param_present) {
       *msg_ptr = LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI;
@@ -6256,6 +6286,24 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_attach_request_msg(LIBLTE_BYTE_MSG_STRUCT* m
       attach_req->old_guti_type_present = true;
     } else {
       attach_req->old_guti_type_present = false;
+    }
+
+    // T3324 Value
+    if(LIBLTE_MME_T3324_VALUE_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_gprs_timer_2_ie(&msg_ptr, &attach_req->t3324);
+      attach_req->t3324_present = true;
+    } else {
+      attach_req->t3324_present = false;
+    }
+
+    // T3412 Ext Value
+    if (LIBLTE_MME_T3412_EXTENDED_VALUE_IEI == *msg_ptr) {
+      msg_ptr++;
+      liblte_mme_unpack_gprs_timer_3_ie(&msg_ptr, &attach_req->t3412_ext);
+      attach_req->t3412_ext_present = true;
+    } else {
+      attach_req->t3412_ext_present = false;
     }
 
     // Extended DRX Parameter

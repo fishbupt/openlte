@@ -2091,6 +2091,8 @@ LIBLTE_ERROR_ENUM liblte_mme_unpack_eps_quality_of_service_ie(uint8** ie_ptr,
 #define LIBLTE_MME_ESM_CAUSE_COLLISION_WITH_NETWORK_INITIATED_REQUEST 0x38
 #define LIBLTE_MME_ESM_CAUSE_UNSUPPORTED_QCI_VALUE 0x3B
 #define LIBLTE_MME_ESM_CAUSE_BEARER_HANDLING_NOT_SUPPORTED 0x3C
+#define LIBLTE_MME_ESM_CAUSE_MAXIMUM_EPS_BEARERS_REACHED 0x41
+#define LIBLTE_MME_ESM_CAUSE_REQUESTED_APN_NOT_SUPPORTED 0x42
 #define LIBLTE_MME_ESM_CAUSE_INVALID_PTI_VALUE 0x51
 #define LIBLTE_MME_ESM_CAUSE_SEMANTICALLY_INCORRECT_MESSAGE 0x5F
 #define LIBLTE_MME_ESM_CAUSE_INVALID_MANDATORY_INFORMATION 0x60
@@ -2887,6 +2889,7 @@ LIBLTE_ERROR_ENUM liblte_mme_pack_security_protected_nas_msg(LIBLTE_BYTE_MSG_STR
 #define LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_IEI 0x64
 #define LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_IEI 0xF
 #define LIBLTE_MME_T3412_EXTENDED_VALUE_IEI 0x5E
+#define LIBLTE_MME_T3324_VALUE_IEI 0x6A
 #define LIBLTE_MME_EXTENDED_DRX_PARAMETER_IEI 0x6E
 // Enums
 // Structs
@@ -2903,6 +2906,7 @@ typedef struct {
   LIBLTE_MME_EMERGENCY_NUMBER_LIST_STRUCT emerg_num_list;
   LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT eps_network_feature_support;
   LIBLTE_MME_GPRS_TIMER_3_STRUCT t3412_ext;
+  uint8 t3324;
   LIBLTE_MME_ADDITIONAL_UPDATE_RESULT_ENUM additional_update_result;
   LIBLTE_MME_EXTENDED_DRX_STRUCT eDrx_param;
   uint8 eps_attach_result;
@@ -2918,6 +2922,7 @@ typedef struct {
   bool eps_network_feature_support_present;
   bool additional_update_result_present;
   bool t3412_ext_present;
+  bool t3324_present;
   bool eDrx_param_present;
 } LIBLTE_MME_ATTACH_ACCEPT_MSG_STRUCT;
 // Functions
@@ -3022,6 +3027,8 @@ typedef struct {
   LIBLTE_MME_ADDITIONAL_UPDATE_TYPE_STRUCT additional_update_type;
   LIBLTE_MME_DEVICE_PROPERTIES_ENUM device_properties;
   LIBLTE_MME_GUTI_TYPE_ENUM old_guti_type;
+  uint8 t3324;
+  LIBLTE_MME_GPRS_TIMER_3_STRUCT t3412_ext;
   LIBLTE_MME_EXTENDED_DRX_STRUCT eDrx_param;
   uint32 old_p_tmsi_signature;
   uint8 eps_attach_type;
@@ -3039,6 +3046,8 @@ typedef struct {
   bool voice_domain_pref_and_ue_usage_setting_present;
   bool device_properties_present;
   bool old_guti_type_present;
+  bool t3324_present;
+  bool t3412_ext_present;
   bool eDrx_param_present;
 } LIBLTE_MME_ATTACH_REQUEST_MSG_STRUCT;
 // Functions

@@ -32,6 +32,15 @@ std::string liblte_mme_msg_to_string(LIBLTE_BYTE_MSG_STRUCT &mme_msg) {
       set_eps_mobile_id(attach_req.eps_mobile_id, ostream, indent_str);
       set_ue_network_cap(attach_req.ue_network_cap, ostream, indent_str);
       set_esm_message_container(&attach_req.esm_msg, ostream, indent_str);
+      if (attach_req.t3324_present) {
+        set_gprs_timer_2(attach_req.t3324, "T3324", ostream, indent_str);
+      }
+      if (attach_req.t3412_ext_present) {
+        set_gprs_timer_3(attach_req.t3412_ext, "T3412 extended", ostream, indent_str);
+      }
+      if (attach_req.eDrx_param_present) {
+        set_extended_drx(attach_req.eDrx_param, ostream, indent_str);
+      }
       break;
     }
     case LIBLTE_MME_MSG_TYPE_ATTACH_ACCEPT: {
@@ -78,6 +87,9 @@ std::string liblte_mme_msg_to_string(LIBLTE_BYTE_MSG_STRUCT &mme_msg) {
       if (attach_accept.t3412_ext_present) {
         set_gprs_timer_3(attach_accept.t3412_ext, "T3412 extended", ostream,
                          indent_str);
+      }
+      if (attach_accept.t3324_present) {
+        set_gprs_timer_2(attach_accept.t3324, "T3324", ostream, indent_str);
       }
       if (attach_accept.eDrx_param_present) {
         set_extended_drx(attach_accept.eDrx_param, ostream, indent_str);
@@ -196,17 +208,50 @@ void set_esm_message_container(LIBLTE_BYTE_MSG_STRUCT *esm_msg,
   uint8 seq_num;
   liblte_mme_parse_msg_header(esm_msg, &pd, &sec_hdr_type, mac, &seq_num,
                               &msg_type);
-  ostream << std::string(indent, ' ') << "ESM message container: " << std::endl;
+  ostream << indent << "ESM message container: " << std::endl;
   std::string indent_str = indent + std::string(indent_size, ' ');
   set_pd(pd, ostream, indent_str);
 
   switch (msg_type) {
-    case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REQUEST:
+    case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REQUEST: {
+      LIBLTE_MME_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REQUEST_MSG_STRUCT
+      act_def_eps_bearer_context_req{};
+      liblte_mme_unpack_activate_default_eps_bearer_context_request_msg(
+          esm_msg, &act_def_eps_bearer_context_req);
+      set_eps_qos(act_def_eps_bearer_context_req.eps_qos, ostream, indent_str);
+
+      ostream << indent_str << "Access point name = "
+              << act_def_eps_bearer_context_req.apn.apn << std::endl;
+      set_pdn_address(act_def_eps_bearer_context_req.pdn_addr, ostream,
+                      indent_str);
+      if (act_def_eps_bearer_context_req.esm_cause_present) {
+        set_esm_cause(act_def_eps_bearer_context_req.esm_cause, ostream,
+                      indent_str);
+      }
+      if (act_def_eps_bearer_context_req.header_compress_cfg_present) {
+        set_header_compression_configuration(
+            act_def_eps_bearer_context_req.header_compress_cfg, ostream,
+            indent_str);
+      }
+      if (act_def_eps_bearer_context_req
+              .control_plane_only_indication_present) {
+        set_control_plane_only_indication(
+            act_def_eps_bearer_context_req.control_plane_only_indication,
+            ostream, indent_str);
+      }
       break;
+    }
     case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_ACCEPT:
       break;
-    case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REJECT:
+    case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REJECT: {
+      LIBLTE_MME_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REJECT_MSG_STRUCT
+      act_def_eps_bearer_context_rej{};
+      liblte_mme_unpack_activate_default_eps_bearer_context_reject_msg(
+          esm_msg, &act_def_eps_bearer_context_rej);
+      set_esm_cause(act_def_eps_bearer_context_rej.esm_cause, ostream,
+                    indent_str);
       break;
+    }
     case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_REQUEST:
       break;
     case LIBLTE_MME_MSG_TYPE_ACTIVATE_DEDICATED_EPS_BEARER_CONTEXT_ACCEPT:
@@ -309,6 +354,19 @@ void set_emm_cause(uint8 emm_cause, std::ostream &ostream,
           << ")" << std::endl;
 }
 
+void set_esm_cause(uint8 esm_cause, std::ostream &ostream,
+                   const std::string &indent) {
+  std::string desc;
+  auto it = esm_cause_strings.find(esm_cause);
+  if (it == esm_cause_strings.end()) {
+    desc = "Unknown ESM Cause";
+  } else {
+    desc = esm_cause_strings.at(esm_cause);
+  }
+  ostream << indent << "ESM cause = 0x" << hex_out_s(esm_cause) << " (" << desc
+          << ")" << std::endl;
+}
+
 void set_mac(uint8 *mac, std::ostream &ostream, const std::string &indent) {
   ostream << indent << "MAC = 0x" << hex_out_s(mac[0]) << hex_out_s(mac[1])
           << hex_out_s(mac[2]) << hex_out_s(mac[3]) << std::endl;
@@ -354,10 +412,9 @@ void set_nas_key_set_identifier(const LIBLTE_MME_NAS_KEY_SET_ID_STRUCT &nas_ksi,
                                 const std::string &indent) {
   ostream << indent << "NAS key set identifier:" << std::endl;
   std::string indent_str = indent + std::string(indent_size, ' ');
-  ostream << std::string(indent_str, ' ') << "TSC = " << nas_ksi.tsc_flag
+  ostream << indent_str << "TSC = " << nas_ksi.tsc_flag << std::endl;
+  ostream << indent_str << "NAS key set identifier = " << +nas_ksi.nas_ksi
           << std::endl;
-  ostream << std::string(indent_str, ' ')
-          << "NAS key set identifier = " << +nas_ksi.nas_ksi << std::endl;
 }
 
 // EPS mobile identity
@@ -500,21 +557,26 @@ void set_ue_network_cap(
   }
 }
 
+void set_pdn_type(uint8 pdn_type, std::ostream &ostream,
+                  const std::string &indent) {
+  std::string pdn_type_desc;
+  auto it = pdn_type_strings.find(pdn_type);
+  if (it == pdn_type_strings.end()) {
+    pdn_type_desc = "Unknown PDN type";
+  } else {
+    pdn_type_desc = pdn_type_strings.at(pdn_type);
+  }
+  ostream << indent << "PDN type = " << +pdn_type << " (" << pdn_type_desc
+          << ")" << std::endl;
+}
+
 void set_pdn_connectivity_request(
     const LIBLTE_MME_PDN_CONNECTIVITY_REQUEST_MSG_STRUCT &pdn_con_req,
     std::ostream &ostream, const std::string &indent) {
   ostream << indent << "Request type = " << +pdn_con_req.request_type
           << std::endl;
 
-  std::string pdn_type_desc;
-  auto it = pdn_type_strings.find(pdn_con_req.pdn_type);
-  if (it == pdn_type_strings.end()) {
-    pdn_type_desc = "Unknown PDN type";
-  } else {
-    pdn_type_desc = pdn_type_strings.at(pdn_con_req.pdn_type);
-  }
-  ostream << indent << "PDN type = " << +pdn_con_req.pdn_type << " ("
-          << pdn_type_desc << ")" << std::endl;
+  set_pdn_type(pdn_con_req.pdn_type, ostream, indent);
 }
 
 std::string set_hex_data(const uint8 *data, int size) {
@@ -715,6 +777,13 @@ void set_gprs_timer_3(const LIBLTE_MME_GPRS_TIMER_3_STRUCT &gprs_timer,
           << std::endl;
 }
 
+void set_gprs_timer_2(uint8 value, const std::string timer_name,
+                      std::ostream &ostream, const std::string &indent) {
+  ostream << indent << timer_name << ":"<<std::endl;
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  ostream << indent_str << "value = " << +value << std::endl;
+}
+
 void set_tracking_area_id(const LIBLTE_MME_TRACKING_AREA_ID_STRUCT &tai,
                           std::ostream &ostream, const std::string &indent) {
   ostream << indent << "MCC = " << tai.mcc << std::endl;
@@ -776,7 +845,7 @@ void set_emergency_number_list(
 void set_eps_network_feature_support(
     const LIBLTE_MME_EPS_NETWORK_FEATURE_SUPPORT_STRUCT &eps_nfs,
     std::ostream &ostream, const std::string indent) {
-  ostream << "EPS network feature support:" << std::endl;
+  ostream << indent << "EPS network feature support:" << std::endl;
   std::string indent_str = indent + std::string(indent_size, ' ');
   ostream << indent_str << "CP CIoT = " << eps_nfs.cp_ciot << std::endl;
   ostream << indent_str << "ERw/o PDN = " << eps_nfs.erwo_pdn << std::endl;
@@ -800,9 +869,81 @@ void set_additional_update_result(
 
 void set_extended_drx(const LIBLTE_MME_EXTENDED_DRX_STRUCT &eDrx,
                       std::ostream &ostream, const std::string &indent) {
-  ostream << "Extended DRX Parameter: " << std::endl;
+  ostream << indent << "Extended DRX Parameter: " << std::endl;
   std::string indent_str = indent + std::string(indent_size, ' ');
   ostream << indent_str << "Paging Time Window = " << eDrx.paging_time_window
           << std::endl;
   ostream << indent_str << "eDRX value = " << eDrx.eDRX_value << std::endl;
+}
+
+void set_eps_qos(const LIBLTE_MME_EPS_QUALITY_OF_SERVICE_STRUCT &eps_qos,
+                 std::ostream &ostream, const std::string indent) {
+  ostream << indent << "EPS Qos:" << std::endl;
+
+  auto indent_str = indent + std::string(indent_size, ' ');
+  ostream << indent_str << "QCI = " << +eps_qos.qci << std::endl;
+  if (eps_qos.br_present) {
+    ostream << indent_str << "MBR for UL = " << +eps_qos.mbr_ul << std::endl;
+    ostream << indent_str << "MBR for DL = " << +eps_qos.mbr_dl << std::endl;
+    ostream << indent_str << "GBR for UL = " << +eps_qos.gbr_ul << std::endl;
+    ostream << indent_str << "GBR for DL = " << +eps_qos.gbr_dl << std::endl;
+    if (eps_qos.br_ext_present) {
+      ostream << indent_str << "Ext MBR for DL = " << +eps_qos.mbr_dl_ext
+              << std::endl;
+      ostream << indent_str << "Ext GBR for UL = " << +eps_qos.gbr_ul_ext
+              << std::endl;
+      ostream << indent_str << "Ext GBR for DL = " << +eps_qos.gbr_dl_ext
+              << std::endl;
+    }
+  }
+}
+void set_pdn_address(const LIBLTE_MME_PDN_ADDRESS_STRUCT &pdn_addr,
+                     std::ostream &ostream, const std::string indent) {
+  set_pdn_type(pdn_addr.pdn_type, ostream, indent);
+  switch (pdn_addr.pdn_type) {
+    case LIBLTE_MME_PDN_TYPE_IPV4:
+      ostream << indent << "IPv4 = " << +pdn_addr.addr[0] << "."
+              << +pdn_addr.addr[1] << "." << +pdn_addr.addr[2] << "."
+              << +pdn_addr.addr[3] << std::endl;
+      break;
+    case LIBLTE_MME_PDN_TYPE_IPV6:
+      break;
+    case LIBLTE_MME_PDN_TYPE_IPV4V6:
+      break;
+  }
+}
+
+void set_header_compression_configuration(
+    const LIBLTE_MME_HEADER_COMPRESSION_CONFIGURATION_STRUCT
+        &header_compress_cfg,
+    std::ostream &ostream, const std::string &indent) {
+  ostream << indent << "Header compression configuration:" << std::endl;
+
+  const char *profiles[] = {"not supported", "supported"};
+  std::string indent_str = indent + std::string(indent_size, ' ');
+  ostream << indent_str << "RoHC profile 0x0002(UDP/IP) is "
+          << profiles[header_compress_cfg.profile_0x0002] << std::endl;
+  ostream << indent_str << "RoHC profile 0x0003(ESP/IP) is "
+          << profiles[header_compress_cfg.profile_0x0003] << std::endl;
+  ostream << indent_str << "RoHC profile 0x0004(IP) is "
+          << profiles[header_compress_cfg.profile_0x0004] << std::endl;
+  ostream << indent_str << "RoHC profile 0x0006(TCP/IP) is "
+          << profiles[header_compress_cfg.profile_0x0006] << std::endl;
+  ostream << indent_str << "RoHC profile 0x0102(UDP/IP) is "
+          << profiles[header_compress_cfg.profile_0x0102] << std::endl;
+  ostream << indent_str << "RoHC profile 0x0103(ESP/IP) is "
+          << profiles[header_compress_cfg.profile_0x0103] << std::endl;
+  ostream << indent_str << "RoHC profile 0x0104(IP) is "
+          << profiles[header_compress_cfg.profile_0x0104] << std::endl;
+
+  ostream << indent_str << "MAX_CID = " << header_compress_cfg.max_cid
+          << std::endl;
+}
+
+void set_control_plane_only_indication(
+    const LIBLTE_MME_CONTROL_PLANE_ONLY_INDICATION_ENUM &cpoi,
+    std::ostream &ostream, const std::string &indent) {
+  ostream << indent << "Control plane only indication = " << cpoi << " ("
+          << liblte_mme_control_plane_only_indication_text[cpoi] << ")"
+          << std::endl;
 }
